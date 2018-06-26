@@ -49,10 +49,14 @@ function (err, todos) {
 
 
 function getTodosOrder(res,order) {
-
-	//var requestedOrder = ["2", "3"]; 
+	
+	var requestedOrder = JSON.parse(order);
+	var theOrder = ["1", "2"] ;
+	if(requestedOrder == theOrder){console.log("Everythin is Fine!");}
+	//requestedOrder.push(order); 
+console.log(typeof(theOrder));console.log("You Hit Me!"); console.log(typeof(requestedOrder));
 //req.body.order;
-Todo.find({order: order},
+Todo.find({order: requestedOrder},
 function (err, todos) {
 
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
