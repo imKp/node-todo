@@ -74,12 +74,13 @@
            			onclick="updateDesign()" />
 		</div>
 
-		<div id="searchDesign">
-				<input name="searchButton" 
+		<div id="searchDesignDD">
+			<input name="searchDesignDDButton" 
           			 type="button" 
-           			value="Search" 
-           			onclick="searchDesign()" />
+           			value="Load Design" 
+           			onclick="retriveNames()" />
 		</div>
+	
 	</div>
 	
 	<script>
@@ -311,25 +312,40 @@ d3.selectAll("#nameOfDesign input").each(function(d,i) {
 
 
 /********/
-function lupdateDesign(){
-	/*globalPixelData = [];
-	var name = document.getElementById("nameOfDesign").value;
-	var orderData = [];
-	var pixelData = [];
-	orderData.push(onchangeRow()); 
-	orderData.push(onchangeColumn());
-	//nameOfDesignF();
-	colorsOfElement()
-	//console.log(typeof(name));
-  d3.xhr('http://localhost:8080/api/todon')
-    .header("Content-Type", "application/json")
-    .get(
-        JSON.stringify({
-	  order: orderData})
-    );
-	*/
-}
 
+var designNamesFromdb = [];
+
+
+var titleToGuide = ["Look For your Designs Here"];
+
+
+
+var designSearchDD = d3.select('#searchDesignDD')
+  .append('select')
+  	.attr('class','select')
+	.attr('size',5)
+	.on("dblclick", function(){console.log("Yep you hit me!");});
+
+
+var optionsSaved =  designSearchDD
+			.selectAll('option')
+			.data(titleToGuide).enter()
+			.append('option')
+			.text(function (d){ return d;});
+
+function retriveNames(){
+	d3.selectAll("#searchDesignDD option").remove();
+	d3.json("http://localhost:8080/api/todos", function(error, data, i){
+		designNamesFromdb = [];		
+		for(var i = 0; i < data.length; i++){		
+		var optionsSaved =designNamesFromdb.push(data[i]["text"]); 
+		}
+		designSearchDD.selectAll('option')
+			.data(designNamesFromdb).enter()
+			.append('option').sort(d3.ascending)
+			.text(function (d){ return d;});	
+	});
+}
 
 
 
