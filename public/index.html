@@ -1,83 +1,338 @@
-<!doctype html>
-
-<!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="scotchTodo">
+<!DOCTYPE html>
+<html>
 <head>
-	<!-- META -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
-
-	<title>Node/Angular Todo App</title>
-
-	<!-- SCROLLS -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-	<style>
-		html 					{ overflow-y:scroll; }
-		body 					{ padding-top:50px; }
-		#todo-list 				{ margin-bottom:30px; }
-		#todo-form 	 			{ margin-bottom:50px; }
-	</style>
-
-	<!-- SPELLS -->
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
-
-	<script src="js/controllers/main.js"></script> <!-- load up our controller -->
-	<script src="js/services/todos.js"></script> <!-- load our todo service -->
-	<script src="js/core.js"></script> <!-- load our main application -->
-
+	<title>Light Pixel Animation Display</title>
+	
 </head>
-<!-- SET THE CONTROLLER -->
-<body ng-controller="mainController">
-	<div class="container">
+<style>	
+	 rect.bordered {
+        stroke: #E6E6E6;
+        stroke-width:2px;   
+      }
 
-		<!-- HEADER AND TODO COUNT -->
-		<div class="jumbotron text-center">
-			<h1>I'm a Todo-aholic <span class="label label-info">{{ todos.length }}</span></h1>
+      text.mono {
+        font-size: 9pt;
+        font-family: Consolas, courier;
+        fill: #aaa;
+      }
+
+      text.axis-workweek {
+        fill: #000;
+      }
+
+      text.axis-worktime {
+        fill: #000;
+      }
+
+     .axis {
+	  font: 10px sans-serif;
+	}
+
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+	}
+	li{
+		padding-right: 40px;
+		text-align:center;
+	}
+	#containor{
+		text-align:center;	
+		padding-left:15%;
+		padding-right:15%;	
+		width:960px;	
+	}
+    	#heatMap{
+		text-align: center;
+		padding: 200px;
+		margin:10px;
+	}
+	#inds{
+	position:absolute;
+	top:10px;
+	left:10px; float:right;
+}
+
+</style>
+<script src="https://d3js.org/d3.v3.js"></script>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<body>
+	<div id="container">
+		<div id="chart" align="left"></div>
+		<div id="colorSelectorMenu" align="left"></div>
+		<div id="matrixRow" align="center"></div>
+		<div id="matrixColumn" align="left"></div>
+		<button class="btn1">Done</button>
+		
+		 <input type="text" id="nameOfDesign">
+		<div id="saveDesign">
+    			<input name="updateButton" 
+          			 type="button" 
+           			value="Save Design" 
+           			onclick="updateDesign()" />
 		</div>
 
-		<!-- TODO LIST -->
-		<div id="todo-list" class="row">
-			<div class="col-sm-4 col-sm-offset-4">
+		<div id="searchDesign">
+				<input name="searchButton" 
+          			 type="button" 
+           			value="Search" 
+           			onclick="searchDesign()" />
+		</div>
+	</div>
+	
+	<script>
+		var margin = { top: 50, right: 0, bottom: 100, left: 30 },
+          	width =  500 - margin.left - margin.right,
+          	height = 500 - margin.top - margin.bottom,
+          	gridSize = Math.floor(width / 24),
+          	legendElementWidth = gridSize*2,
+          	buckets = 9,
+          	colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
+          	days = ["1R", "2R", "3R", "4R", "5R", "6R", "7R", "8R"],
+          	times = ["1C", "2C", "3C", "4C", "5C", "6C", "7C", "8C"];
+		
+          
 
+      		var svg = d3.select("#chart").append("svg")
+          		  	.attr("width", width + margin.left + margin.right)
+          			.attr("height", height + margin.top + margin.bottom)
+          			.append("g")
+          			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      
+		/*var drawPixel = function(numRow, numCol){
+					d3.selectAll("#chart rect").remove();
+					d3.json("designOne.json", function(error, data){
+						//console.log(typeof(data));
+						
+						for(var propt in data){
+    							var valuesArrayTemp = [];						
+							for(var i = 0; i< numCol; i++){						
+							valuesArrayTemp.push(data[propt][i]);								
+							//console.log(data[8][i]);	
+							}				
+							dataRow = valuesArrayTemp;	
+							//console.log(dataRow);		
+							svg.selectAll("chart")
+							.data(dataRow).enter()
+							.append("rect")
+							.attr("x", function(data, i){ return i * 15;})
+              						.attr("y", function(data, i){ return propt * 15;})
+              						.attr("width",  14)
+              						.attr("height", 14).style('fill', "white").style('stroke-width', 0.7).style('stroke', "black")
+							.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
+							.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
+						//.on("mouseover", function(){console.log("Yep! you hit me.");});
+
+						}						
+					});						
+				}*/
+		
+		var drawMatrix = function(numRow, numCol){
+						//console.log(numRow, numCol);
+						d3.selectAll("#chart rect").remove();
+						var row;
+						var column;
+						for(row = 1; row <= numRow; row++){//console.log(numCol);
+							for(column = 1; column <= numCol; column++){
+								data = [column];
+								//console.log(data);
+								svg.selectAll("#chart")
+								.data(data).enter()
+								.append("rect")
+								.attr("x", function(){ console.log(column); return column * 15;})
+              							.attr("y", function(){ return row * 15;})
+              							.attr("width",  14)
+              							.attr("height", 14).style('fill', "white").style('stroke-width', 0.7).style('stroke', "black")
+								.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
+								.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
+								//console.log("You hit me!");
+							}	
+						};
+						/*for(i = 1; i <= 32; i++){
+							console.log(i);}*/
+					}
 				
 
-				<!-- LOOP OVER THE TODOS IN $scope.todos -->
-				<div class="checkbox" ng-repeat="todo in todos">
-					<label>
-						<input type="checkbox" ng-click="deleteTodo(todo._id)"> {{ todo.text }}
-					</label>
-				</div>
+			//svg.selectAll("#chart rect").on("mouseover", function(){console.log("Yep! you hit me.");});
 
-				<p class="text-center" ng-show="loading">
-					<span class="fa fa-spinner fa-spin fa-3x"></span>
-				</p>
+var dataColor = ["red", "blue", "green", "yellow", "magenta", "cyan", "white", "black"];
 
-			</div>
-		</div>
+var selectColor = d3.select('#colorSelectorMenu')
+  .append('select')
+  	.attr('class','select')
+    .on('change',onchangeColor());
 
-		<!-- FORM TO CREATE TODOS -->
-		<div id="todo-form" class="row">
-			<div class="col-sm-8 col-sm-offset-2 text-center">
-				<form>
-					<div class="form-group">
+var optionsColor = selectColor
+  .selectAll('option')
+	.data(dataColor).enter()
+	.append('option')
+		.text(function (d) { return d; });
 
-						<!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-						<input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
-					</div>
+function onchangeColor() {
+	selectValue = d3.select('#colorSelectorMenu select').property('value');
+	//console.log(selectValue);
+	//colorsOfElement();
+	return selectValue;
+};
 
-					<!-- createToDo() WILL CREATE NEW TODOS -->
-					<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
-				</form>
-			</div>
-		</div>
+var globalPixelData = [];
 
-		<div class="text-center text-muted">
-			<p>A demo by <a href="http://scotch.io">Scotch</a>.</p>
-			<p>Read the <a href="http://scotch.io/tutorials/javascript/creating-a-single-page-todo-app-with-node-and-angular">tutorial</a>.</p>
-		</div>
+function colorsOfElement(){		
+d3.selectAll("#chart rect").each(function(d,i) {
+  //console.log(typeof(d3.select(this).style("fill"))); 
+	 var rgb = d3.select(this).style("fill").match(/\d+/g);
+    //console.log(rgb); 
+  globalPixelData.push(rgb); 
+})}
 
-	</div>
+/********/
 
+var matrixRowData = [];
+
+matrixRowData = function(){
+	var tempRowData = []
+	for(i = 1; i <= 32; i++){
+		tempRowData.push(i);
+		//console.log(tempRowData);
+	}
+	
+	return tempRowData;
+}
+
+
+var matrixRow = d3.select('#matrixRow')
+  .append('select')
+  	.attr('class','select')
+	.on("change", function(d){var nosOfColumn = onchangeColumn(); var nosOfRow = onchangeRow(); drawMatrix(nosOfRow, nosOfColumn)});
+    
+
+var optionsRow = matrixRow
+  .selectAll('option')
+	.data(matrixRowData).enter()
+	.append('option')
+		.text(function (d) { return d; });
+
+function onchangeRow() {
+	selectValue = d3.select('#matrixRow select').property('value');
+	//console.log(selectValue);
+	return selectValue;
+};
+
+
+
+/******/
+var matrixColumnData = [];
+var globalFileName;
+
+matrixColumnData = function(){
+	var tempColumnData = []
+	for(i = 1; i <= 32; i++){
+		tempColumnData.push(i);
+		//console.log(tempColumnData);
+	}
+	
+	return tempColumnData;
+}
+
+
+var matrixColumn = d3.select('#matrixColumn')
+  .append('select')
+  	.attr('class','select')
+	.on("change", function(d){var nosOfColumn = onchangeColumn(); var nosOfRow = onchangeRow(); drawMatrix(nosOfRow, nosOfColumn)});
+    
+
+var optionsColumn = matrixColumn
+  .selectAll('option')
+	.data(matrixColumnData).enter()
+	.append('option')
+		.text(function (d) { return d; });
+
+function onchangeColumn() {
+	selectValue = d3.select('#matrixColumn select').property('value');
+	//console.log(selectValue);
+	return selectValue;
+};
+
+
+
+function updateDesignNew(){
+  d3.xhr('http://localhost:8080/api/todos')
+    .header("Content-Type", "application/json")
+    .post(
+        JSON.stringify({name: "bob", order: [4, 4], pixel: [20, 30, 40]})
+    );
+}
+
+function updateDesign(){
+	globalPixelData = [];
+	var name = document.getElementById("nameOfDesign").value;
+	var orderData = [];
+	var pixelData = [];
+	orderData.push(onchangeRow()); 
+	orderData.push(onchangeColumn());
+	//nameOfDesignF();
+	var name = document.getElementById("nameOfDesign").value + orderData.toString();
+	colorsOfElement()
+	//console.log(typeof(name));
+  d3.xhr('http://localhost:8080/api/todos')
+    .header("Content-Type", "application/json")
+    .post(
+        JSON.stringify({
+		text: name, 
+		order: orderData, 
+		pixel: globalPixelData })
+    );
+	
+}
+
+
+
+$(document).ready(function(){
+    $(".btn1").click(function(){
+        $("#matrixRow").hide(); $("#matrixColumn").hide();
+    });
+});
+
+/******/
+
+var nameOfDesignBox = d3.select('#nameOfDesign')
+
+nameOfDesignBox.append('input')
+    .attr('type','text')
+    .attr('name','textInput');
+
+function nameOfDesignF(){		
+d3.selectAll("#nameOfDesign input").each(function(d,i) {
+  globalFileName = d3.select(this).attr("value");
+})}
+
+
+/********/
+function lupdateDesign(){
+	/*globalPixelData = [];
+	var name = document.getElementById("nameOfDesign").value;
+	var orderData = [];
+	var pixelData = [];
+	orderData.push(onchangeRow()); 
+	orderData.push(onchangeColumn());
+	//nameOfDesignF();
+	colorsOfElement()
+	//console.log(typeof(name));
+  d3.xhr('http://localhost:8080/api/todon')
+    .header("Content-Type", "application/json")
+    .get(
+        JSON.stringify({
+	  order: orderData})
+    );
+	*/
+}
+
+
+
+
+	</script>
 </body>
 </html>

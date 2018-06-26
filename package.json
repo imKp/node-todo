@@ -1,5 +1,5 @@
 {
-  "name": "node-todo",
+  "name": "pixelart",
   "version": "0.0.1",
   "description": "Simple todo application.",
   "main": "server.js",
@@ -10,5 +10,17 @@
     "express": "^4.10.8",
     "method-override": "^2.3.10",
     "morgan": "^1.9.0"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scotch-io/node-todo.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scotch-io/node-todo/issues"
+  },
+  "homepage": "https://github.com/scotch-io/node-todo#readme"
 }

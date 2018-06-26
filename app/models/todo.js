@@ -1,8 +1,12 @@
 var mongoose = require('mongoose');
 
 module.exports = mongoose.model('Todo', {
-    text: {
+order: [],    
+text: {
         type: String,
         default: ''
-    }
+    },
+pixel: []
+
+
 });
