@@ -80,7 +80,7 @@
            			value="Load Design" 
            			onclick="retriveNames()" />
 		</div>
-	
+		<div id="designView" align="left"></div>
 	</div>
 	
 	<script>
@@ -164,13 +164,15 @@ var dataColor = ["red", "blue", "green", "yellow", "magenta", "cyan", "white", "
 var selectColor = d3.select('#colorSelectorMenu')
   .append('select')
   	.attr('class','select')
+	.attr('size', 8)
     .on('change',onchangeColor());
 
 var optionsColor = selectColor
   .selectAll('option')
 	.data(dataColor).enter()
 	.append('option')
-		.text(function (d) { return d; });
+	
+		.text(function (d) { return d; }).attr;
 
 function onchangeColor() {
 	selectValue = d3.select('#colorSelectorMenu select').property('value');
@@ -196,7 +198,7 @@ var matrixRowData = [];
 matrixRowData = function(){
 	var tempRowData = []
 	for(i = 1; i <= 32; i++){
-		tempRowData.push(i);
+		if( i%2 == 0){tempRowData.push(i);}
 		//console.log(tempRowData);
 	}
 	
@@ -231,7 +233,7 @@ var globalFileName;
 matrixColumnData = function(){
 	var tempColumnData = []
 	for(i = 1; i <= 32; i++){
-		tempColumnData.push(i);
+		if(i%2 == 0){tempColumnData.push(i);}
 		//console.log(tempColumnData);
 	}
 	
@@ -259,13 +261,13 @@ function onchangeColumn() {
 
 
 
-function updateDesignNew(){
+/*function updateDesignNew(){
   d3.xhr('http://localhost:8080/api/todos')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({name: "bob", order: [4, 4], pixel: [20, 30, 40]})
     );
-}
+}*/
 
 function updateDesign(){
 	globalPixelData = [];
@@ -278,7 +280,7 @@ function updateDesign(){
 	var name = document.getElementById("nameOfDesign").value + orderData.toString();
 	colorsOfElement()
 	//console.log(typeof(name));
-  d3.xhr('http://localhost:8080/api/todos')
+  d3.xhr('http://192.168.2.11:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -323,8 +325,9 @@ var titleToGuide = ["Look For your Designs Here"];
 var designSearchDD = d3.select('#searchDesignDD')
   .append('select')
   	.attr('class','select')
-	.attr('size',5)
-	.on("dblclick", function(){console.log("Yep you hit me!");});
+	.attr('size',5);
+	//.on("click", function(){console.log("Yep Hit Me!"); nameOfTheDesign();});	
+	
 
 
 var optionsSaved =  designSearchDD
@@ -335,7 +338,7 @@ var optionsSaved =  designSearchDD
 
 function retriveNames(){
 	d3.selectAll("#searchDesignDD option").remove();
-	d3.json("http://localhost:8080/api/todos", function(error, data, i){
+	d3.json("http://192.168.2.11:8080/api/todos", function(error, data, i){
 		designNamesFromdb = [];		
 		for(var i = 0; i < data.length; i++){		
 		var optionsSaved =designNamesFromdb.push(data[i]["text"]); 
@@ -343,11 +346,67 @@ function retriveNames(){
 		designSearchDD.selectAll('option')
 			.data(designNamesFromdb).enter()
 			.append('option').sort(d3.ascending)
-			.text(function (d){ return d;});	
+			.text(function (d){ return d;})
+			.on("dblclick", function(){ nameOfTheDesign = d3.select(this).property('value');/*console.log("Yep Hit Me!"); console.log(nameOfTheDesign);*/ loadDesign(nameOfTheDesign);});	
 	});
 }
 
+/*function nameOfTheDesign() {
+	selectValue = d3.select('#searchDesignDD option').property('value');
+	console.log(selectValue);
+	return selectValue;
+};*/
 
+/*********/
+
+var designmargin = { top: 50, right: 0, bottom: 100, left: 30 },
+          	designwidth =  700 - designmargin.left - designmargin.right,
+          	dsignheight = 700 - designmargin.top - designmargin.bottom,
+          	designgridSize = Math.floor(designwidth / 24),
+          	designlegendElementWidth = designgridSize*2;
+          	/*buckets = 9,
+          	colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
+          	days = ["1R", "2R", "3R", "4R", "5R", "6R", "7R", "8R"],
+          	times = ["1C", "2C", "3C", "4C", "5C", "6C", "7C", "8C"];*/
+		
+          
+
+      		var designsvg = d3.select("#designView").append("svg")
+          		  	.attr("width", designwidth + designmargin.left + designmargin.right)
+          			.attr("height", dsignheight + designmargin.top + designmargin.bottom)
+          			.append("g")
+          			.attr("transform", "translate(" + designmargin.left + "," + designmargin.top + ")");
+
+
+
+designRect = [1];
+
+var loadDesign = function(nameOfTheDesign){
+		
+	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
+	url = 'http://192.168.2.11:8080/api/todos/text/' + nameOfTheDesign; 
+	d3.json(url, function(error, data){
+	nosOfRows = data[0]["order"][0];
+	nosOfColumn = data[0]["order"][1];
+	pixelInfo = data[0]["pixel"];	
+	console.log(nosOfRows, nosOfColumn, pixelInfo);	
+			designsvg.selectAll("#designView")
+								.data(pixelInfo).enter()
+								.append("rect")
+								.attr("x", function(d, i){ valueOfx = i%nosOfColumn; return valueOfx *15;})
+              							.attr("y", function(d, i){ valueOfy = Math.floor(i/nosOfColumn); return valueOfy * 15;})
+              							.attr("width",  14)
+              							.attr("height", 14).style('fill', function(d, i){
+									console.log(d.toString());
+									rgbValue = "rgb(" + d.toString() + ")";
+									return rgbValue; 				
+								})								
+								.style('stroke-width', 0.7).style('stroke', "black");
+								//.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
+								//.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
+
+});
+}
 
 	</script>
 </body>
