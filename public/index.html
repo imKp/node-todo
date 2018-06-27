@@ -81,6 +81,13 @@
            			onclick="retriveNames()" />
 		</div>
 		<div id="designView" align="left"></div>
+		<input type="text" id="nameOfEditedDesign">
+		<div id="saveEditedDesign">
+    			<input name="updateButton" 
+          			 type="button" 
+           			value="Save Updated Design" 
+           			onclick="updateDesignSave()" />
+		</div>
 	</div>
 	
 	<script>
@@ -381,11 +388,14 @@ var designmargin = { top: 50, right: 0, bottom: 100, left: 30 },
 
 designRect = [1];
 
+var orderOfUpdatedMatrix = []; 
+
 var loadDesign = function(nameOfTheDesign){
 		
 	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
 	url = 'http://192.168.2.11:8080/api/todos/text/' + nameOfTheDesign; 
 	d3.json(url, function(error, data){
+	orderOfUpdatedMatrix = data[0]["order"] 	
 	nosOfRows = data[0]["order"][0];
 	nosOfColumn = data[0]["order"][1];
 	pixelInfo = data[0]["pixel"];	
@@ -401,11 +411,41 @@ var loadDesign = function(nameOfTheDesign){
 									rgbValue = "rgb(" + d.toString() + ")";
 									return rgbValue; 				
 								})								
-								.style('stroke-width', 0.7).style('stroke', "black");
-								//.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
-								//.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
+								.style('stroke-width', 0.7).style('stroke', "black")
+								.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
+								.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
 
 });
+}
+
+var globalPixelDataUpdate = [];
+
+
+function colorsOfElementUpdated(){
+globalPixelDataUpdate = [];		
+d3.selectAll("#designView rect").each(function(d,i) {
+  //console.log(typeof(d3.select(this).style("fill"))); 
+	 var rgb = d3.select(this).style("fill").match(/\d+/g);
+    //console.log(rgb); 
+  globalPixelDataUpdate.push(rgb); 
+})}
+
+updateDesignSave = function (){
+colorsOfElementUpdated();
+console.log(globalPixelDataUpdate);	
+console.log(orderOfUpdatedMatrix);
+
+var name = document.getElementById("nameOfEditedDesign").value;
+	colorsOfElement()
+	//console.log(typeof(name));
+  d3.xhr('http://192.168.2.11:8080/api/todos/')
+    .header("Content-Type", "application/json")
+    .post(
+        JSON.stringify({
+		text: name, 
+		order: orderOfUpdatedMatrix, 
+		pixel: globalPixelDataUpdate })
+    );
 }
 
 	</script>
