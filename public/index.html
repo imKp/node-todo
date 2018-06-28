@@ -88,6 +88,37 @@
            			value="Save Updated Design" 
            			onclick="updateDesignSave()" />
 		</div>
+		<div id="animateDesign">
+    			<input name="animateDesign" 
+          			 type="button" 
+           			value="Animate" 
+           			onclick="animateDesign()" />
+		</div>
+
+		<div id="animateDesignReverse">
+    			<input name="animateDesignReverse" 
+          			 type="button" 
+           			value="Animate Reverse" 
+           			onclick="animateDesignReverse()" />
+		</div>
+		<div id="animateUp">
+    			<input name="animateUp" 
+          			 type="button" 
+           			value="Animate Up" 
+           			onclick="animateDesignUp()" />
+		</div>
+		<div id="animateDown">
+    			<input name="animateDown" 
+          			 type="button" 
+           			value="Animate Down" 
+           			onclick="animateDesignDown()" />
+		</div>
+		<div id="animateDiagonalRightUp">
+    			<input name="animateDiagonalRightUp" 
+          			 type="button" 
+           			value="Animate DiagonalRightUp" 
+           			onclick="animateDesignDiagonalRightUp()" />
+		</div>
 	</div>
 	
 	<script>
@@ -287,7 +318,7 @@ function updateDesign(){
 	var name = document.getElementById("nameOfDesign").value + orderData.toString();
 	colorsOfElement()
 	//console.log(typeof(name));
-  d3.xhr('http://192.168.2.11:8080/api/todos/')
+  d3.xhr('http://192.168.2.8:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -345,7 +376,7 @@ var optionsSaved =  designSearchDD
 
 function retriveNames(){
 	d3.selectAll("#searchDesignDD option").remove();
-	d3.json("http://192.168.2.11:8080/api/todos", function(error, data, i){
+	d3.json("http://192.168.2.8:8080/api/todos", function(error, data, i){
 		designNamesFromdb = [];		
 		for(var i = 0; i < data.length; i++){		
 		var optionsSaved =designNamesFromdb.push(data[i]["text"]); 
@@ -393,7 +424,7 @@ var orderOfUpdatedMatrix = [];
 var loadDesign = function(nameOfTheDesign){
 		
 	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
-	url = 'http://192.168.2.11:8080/api/todos/text/' + nameOfTheDesign; 
+	url = 'http://192.168.2.8:8080/api/todos/text/' + nameOfTheDesign; 
 	d3.json(url, function(error, data){
 	orderOfUpdatedMatrix = data[0]["order"] 	
 	nosOfRows = data[0]["order"][0];
@@ -436,9 +467,9 @@ console.log(globalPixelDataUpdate);
 console.log(orderOfUpdatedMatrix);
 
 var name = document.getElementById("nameOfEditedDesign").value;
-	colorsOfElement()
+	colorsOfElementUpdated()
 	//console.log(typeof(name));
-  d3.xhr('http://192.168.2.11:8080/api/todos/')
+  d3.xhr('http://192.168.2.8:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -446,6 +477,96 @@ var name = document.getElementById("nameOfEditedDesign").value;
 		order: orderOfUpdatedMatrix, 
 		pixel: globalPixelDataUpdate })
     );
+}
+
+
+var animateDesign = function(){
+	//globalPixelDataUpdate = [];	
+	nosOfColumn = orderOfUpdatedMatrix[1];
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if( (i%parseInt(nosOfColumn)) == (parseInt(nosOfColumn) - 1)){color = 'rgb(' + globalPixelDataUpdate[i - parseInt(nosOfColumn) + 1].toString() + ')'; /*console.log(color);*/ return color;}
+		else{color = 'rgb(' + globalPixelDataUpdate[i + 1].toString() + ')' ; return color;}
+	
+		//d3.select(this).style('fill', "white");	
+		});
+}
+
+var animateDesignReverse = function(){
+	//globalPixelDataUpdate = [];	
+	nosOfColumn = orderOfUpdatedMatrix[1];
+	colorsOfElementUpdated(); 
+	lengthOfArray = globalPixelDataUpdate.length; console.log(lengthOfArray);
+	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		 //var plusOne = i + 1; 
+		
+		
+		//console.log(specialCase, nosOfColumn, "special");
+		var color;
+		if( i%parseInt(nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[ i + parseInt(nosOfColumn) - 1].toString() + ')'; return color;}
+		else{color = 'rgb(' + globalPixelDataUpdate[i - 1].toString() + ')' ; return color;}
+	
+		//d3.select(this).style('fill', "white");	
+		});
+}
+
+var animateDesignUp = function(){
+	//globalPixelDataUpdate = [];	
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if( i >= ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn)].toString() + ')'; return color;}
+		else{color = 'rgb(' + globalPixelDataUpdate[i + nosOfColumn].toString() + ')' ; return color;}
+		//d3.select(this).style('fill', "white");	
+		});
+}
+
+var animateDesignDown = function(){
+	//globalPixelDataUpdate = [];	
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if( i < nosOfColumn){color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn*nosOfRows)-nosOfColumn)].toString() + ')'; return color;}
+		else{color = 'rgb(' + globalPixelDataUpdate[i - nosOfColumn].toString() + ')' ; return color;}
+		//d3.select(this).style('fill', "white");	
+		});
+}
+
+var animateDesignDiagonalRightUp = function(){
+	//globalPixelDataUpdate = [];	
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if ((i > 0) && (i < ((nosOfColumn*nosOfRows)-nosOfColumn))){console.log("YOU HIT ME!"); color = 'rgb(' + globalPixelDataUpdate[i + nosOfColumn + 1].toString() + ')' ; return color;}
+		else if( i%(nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[ i + 1].toString() + ')'; return color;}
+		else if( i >= ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn) + 1].toString() + ')'; console.log(color); return color;}
+		//d3.select(this).style('fill', "white");	
+		});
 }
 
 	</script>
