@@ -88,18 +88,18 @@
            			value="Save Updated Design" 
            			onclick="updateDesignSave()" />
 		</div>
-		<div id="animateDesign">
-    			<input name="animateDesign" 
+		<div id="animateDesignLeft">
+    			<input name="animateDesignLeft" 
           			 type="button" 
-           			value="Animate" 
-           			onclick="animateDesign()" />
+           			value="Animate Left" 
+           			onclick="animateDesignLeft()" />
 		</div>
 
-		<div id="animateDesignReverse">
-    			<input name="animateDesignReverse" 
+		<div id="animateDesignRight">
+    			<input name="animateDesignRight" 
           			 type="button" 
-           			value="Animate Reverse" 
-           			onclick="animateDesignReverse()" />
+           			value="Animate Right" 
+           			onclick="animateDesignRight()" />
 		</div>
 		<div id="animateUp">
     			<input name="animateUp" 
@@ -118,6 +118,51 @@
           			 type="button" 
            			value="Animate DiagonalRightUp" 
            			onclick="animateDesignDiagonalRightUp()" />
+		<div id="animateDiagonalLeftUp">
+    			<input name="animateDiagonalLeftUp" 
+          			 type="button" 
+           			value="Animate DiagonalLeftUp" 
+           			onclick="animateDesignDiagonaLeftUp()" />	
+		<div id="animateDiagonalLeftDown">
+    			<input name="animateDiagonalLeftDown" 
+          			 type="button" 
+           			value="Animate DiagonalLeftDown" 
+           			onclick="animateDesignDiagonalLeftDown()" />	
+		</div>
+		<div id="animateDiagonalRightDown">
+    			<input name="animateDiagonalRightDown" 
+          			 type="button" 
+           			value="Animate DiagonalRightDown" 
+           			onclick="animateDesignDiagonalRightDown()" />	
+		</div>
+		<div id="animateUpLeftDownRight">
+    			<input name="animateUpLeftDownRight" 
+          			 type="button" 
+           			value="Animate UpLeftDownRight" 
+           			onclick="animateDesignUpLeftDownRight()" />	
+		</div>
+		<div id="animateUpRightDownLeft">
+    			<input name="animateUpRightDownLeft" 
+          			 type="button" 
+           			value="Animate UpRightDownLeft" 
+           			onclick="animateDesignUpRightDownLeft()" />	
+		</div>
+		<div id="animateLeftUpRightDown">
+    			<input name="animateLeftUpRightDown" 
+          			 type="button" 
+           			value="Animate LeftUpRightDown" 
+           			onclick="animateDesignLeftUpRightDown()" />	
+		</div>
+		<div id="animateLeftDownRightUp">
+    			<input name="animateLeftDownRightUp" 
+          			 type="button" 
+           			value="Animate LeftDownRightUp" 
+           			onclick="animateDesignLeftDownRightUp()" />	
+		<div id="animateRepeat">
+    			<input name="animateRepeat" 
+          			 type="button" 
+           			value="animateRepeat" 
+           			onclick="animateRepeat()" />	
 		</div>
 	</div>
 	
@@ -318,7 +363,7 @@ function updateDesign(){
 	var name = document.getElementById("nameOfDesign").value + orderData.toString();
 	colorsOfElement()
 	//console.log(typeof(name));
-  d3.xhr('http://192.168.2.8:8080/api/todos/')
+  d3.xhr('http://192.168.2.11:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -376,7 +421,7 @@ var optionsSaved =  designSearchDD
 
 function retriveNames(){
 	d3.selectAll("#searchDesignDD option").remove();
-	d3.json("http://192.168.2.8:8080/api/todos", function(error, data, i){
+	d3.json("http://192.168.2.11:8080/api/todos", function(error, data, i){
 		designNamesFromdb = [];		
 		for(var i = 0; i < data.length; i++){		
 		var optionsSaved =designNamesFromdb.push(data[i]["text"]); 
@@ -424,7 +469,7 @@ var orderOfUpdatedMatrix = [];
 var loadDesign = function(nameOfTheDesign){
 		
 	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
-	url = 'http://192.168.2.8:8080/api/todos/text/' + nameOfTheDesign; 
+	url = 'http://192.168.2.11:8080/api/todos/text/' + nameOfTheDesign; 
 	d3.json(url, function(error, data){
 	orderOfUpdatedMatrix = data[0]["order"] 	
 	nosOfRows = data[0]["order"][0];
@@ -469,7 +514,7 @@ console.log(orderOfUpdatedMatrix);
 var name = document.getElementById("nameOfEditedDesign").value;
 	colorsOfElementUpdated()
 	//console.log(typeof(name));
-  d3.xhr('http://192.168.2.8:8080/api/todos/')
+  d3.xhr('http://192.168.2.11:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -480,11 +525,11 @@ var name = document.getElementById("nameOfEditedDesign").value;
 }
 
 
-var animateDesign = function(){
+var animateDesignLeft = function(){
 	//globalPixelDataUpdate = [];	
 	nosOfColumn = orderOfUpdatedMatrix[1];
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -497,12 +542,12 @@ var animateDesign = function(){
 		});
 }
 
-var animateDesignReverse = function(){
+var animateDesignRight = function(){
 	//globalPixelDataUpdate = [];	
 	nosOfColumn = orderOfUpdatedMatrix[1];
 	colorsOfElementUpdated(); 
 	lengthOfArray = globalPixelDataUpdate.length; console.log(lengthOfArray);
-	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		 //var plusOne = i + 1; 
@@ -522,7 +567,7 @@ var animateDesignUp = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -539,7 +584,7 @@ var animateDesignDown = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -556,18 +601,165 @@ var animateDesignDiagonalRightUp = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().style("fill", function(d, i){
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
 		//var specialCase = i - nosOfColumn + 1; 
 		var color;
-		if ((i > 0) && (i < ((nosOfColumn*nosOfRows)-nosOfColumn))){console.log("YOU HIT ME!"); color = 'rgb(' + globalPixelDataUpdate[i + nosOfColumn + 1].toString() + ')' ; return color;}
-		else if( i%(nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[ i + 1].toString() + ')'; return color;}
-		else if( i >= ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn) + 1].toString() + ')'; console.log(color); return color;}
+		if( i == (nosOfRows*nosOfColumn)-1){color = 'rgb(' + globalPixelDataUpdate[0].toString() + ')'; return color;}
+		else if( i >= ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn) + 1].toString() + ')'; return color;} 
+		else if((i%nosOfColumn) == (nosOfColumn - 1)){color = 'rgb(' + globalPixelDataUpdate[i + 1].toString() + ')' ; return color;}	
+		else{console.log(nosOfColumn + 1 + i);color = 'rgb(' + globalPixelDataUpdate[nosOfColumn + 1 + i].toString() + ')' ; return color;}
 		//d3.select(this).style('fill', "white");	
 		});
 }
+
+var animateDesignDiagonaLeftUp = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if( i == (nosOfRows*nosOfColumn)- nosOfColumn){color = 'rgb(' + globalPixelDataUpdate[nosOfColumn -1].toString() + ')'; return color;}
+		else if( i > ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn) - 1].toString() + ')'; return color;} 
+		else if((i%nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[i + (2 * nosOfColumn) - 1].toString() + ')' ; return color;}	
+		else{console.log(nosOfColumn + 1 + i);color = 'rgb(' + globalPixelDataUpdate[nosOfColumn - 1 + i].toString() + ')' ; return color;}
+		//d3.select(this).style('fill', "white");	
+		});
+}
+
+var animateDesignDiagonalLeftDown = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if( i == 0){color = 'rgb(' + globalPixelDataUpdate[(nosOfColumn*nosOfRows) - 1].toString() + ')'; return color;}
+		else if( i <= (nosOfColumn - 1)){color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn*nosOfRows)-nosOfColumn) - 1].toString() + ')'; return color;} 
+		else if(i%(nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[i - 1].toString() + ')' ; return color;}	
+		else{console.log(nosOfColumn + 1 + i);color = 'rgb(' + globalPixelDataUpdate[i - nosOfColumn - 1].toString() + ')' ; return color;}
+		//d3.select(this).style('fill', "white");
+		});
+}
+
+var animateDesignDiagonalRightDown = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if( i == (nosOfColumn) - 1){color = 'rgb(' + globalPixelDataUpdate[(nosOfColumn*nosOfRows) - nosOfColumn].toString() + ')'; return color;}
+		else if( i <= (nosOfColumn - 2)){color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn*nosOfRows)-nosOfColumn) + 1].toString() + ')'; return color;} 
+		else if(i%(nosOfColumn) == (nosOfColumn - 1)){color = 'rgb(' + globalPixelDataUpdate[i - (2*nosOfColumn) + 1].toString() + ')' ; return color;}	
+		else{console.log(nosOfColumn + 1 + i);color = 'rgb(' + globalPixelDataUpdate[i - (nosOfColumn - 1)].toString() + ')' ; return color;}
+		//d3.select(this).style('fill', "white");
+		});
+}
+
+var animateDesignUpLeftDownRight = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if(i < ((nosOfColumn*nosOfRows)/2))
+			if( (i%(nosOfColumn)) == ((nosOfColumn) - 1)){color = 'rgb(' + globalPixelDataUpdate[i - (nosOfColumn) + 1].toString() + ')'; /*console.log(color);*/ return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i + 1].toString() + ')' ; return color;}
+		else
+			if( i%parseInt(nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[ i + parseInt(nosOfColumn) - 1].toString() + ')'; return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i - 1].toString() + ')' ; return color;}
+		
+		});
+}
+
+var animateDesignUpRightDownLeft = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		if(i >= ((nosOfColumn*nosOfRows)/2))
+			if( (i%(nosOfColumn)) == ((nosOfColumn) - 1)){color = 'rgb(' + globalPixelDataUpdate[i - (nosOfColumn) + 1].toString() + ')'; /*console.log(color);*/ return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i + 1].toString() + ')' ; return color;}
+		else
+			if( i%parseInt(nosOfColumn) == 0){color = 'rgb(' + globalPixelDataUpdate[ i + parseInt(nosOfColumn) - 1].toString() + ')'; return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i - 1].toString() + ')' ; return color;}
+		
+		});
+}
+
+var animateDesignLeftUpRightDown = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		valueOfx = i%nosOfColumn;
+		if(valueOfx < (nosOfColumn/2))
+			if( i >= ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn)].toString() + ')'; return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i + nosOfColumn].toString() + ')' ; return color;}
+		else
+			if( i < nosOfColumn){color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn*nosOfRows)-nosOfColumn)].toString() + ')'; return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i - nosOfColumn].toString() + ')' ; return color;}
+		
+		});
+}
+
+var animateDesignLeftDownRightUp = function(){
+	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
+	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
+	colorsOfElementUpdated(); 
+	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+		//console.log(i);
+		 //console.log(globalPixelDataUpdate[i + 1]);
+		// var plusOne = i + 1; 
+		//var specialCase = i - nosOfColumn + 1; 
+		var color;
+		valueOfx = i%nosOfColumn;
+		if( valueOfx >= (nosOfColumn/2))
+			if( i >= ((nosOfColumn*nosOfRows)-nosOfColumn)){color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn*nosOfRows)-nosOfColumn)].toString() + ')'; return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i + nosOfColumn].toString() + ')' ; return color;}
+		else
+			if( i < nosOfColumn){color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn*nosOfRows)-nosOfColumn)].toString() + ')'; return color;}
+			else{color = 'rgb(' + globalPixelDataUpdate[i - nosOfColumn].toString() + ')' ; return color;}
+		
+		});
+}
+
+var animateRepeat = function(){
+	console.log("Hey!")
+	for(var i = 0; i <= 29; i++){	
+		console.log("hey");
+		animateDesignLeftDownRightUp();
+	}
+}
+
 
 	</script>
 </body>
