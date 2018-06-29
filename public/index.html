@@ -363,7 +363,7 @@ function updateDesign(){
 	var name = document.getElementById("nameOfDesign").value + orderData.toString();
 	colorsOfElement()
 	//console.log(typeof(name));
-  d3.xhr('http://192.168.2.11:8080/api/todos/')
+  d3.xhr('http://192.168.2.8:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -421,7 +421,7 @@ var optionsSaved =  designSearchDD
 
 function retriveNames(){
 	d3.selectAll("#searchDesignDD option").remove();
-	d3.json("http://192.168.2.11:8080/api/todos", function(error, data, i){
+	d3.json("http://192.168.2.8:8080/api/todos", function(error, data, i){
 		designNamesFromdb = [];		
 		for(var i = 0; i < data.length; i++){		
 		var optionsSaved =designNamesFromdb.push(data[i]["text"]); 
@@ -469,7 +469,7 @@ var orderOfUpdatedMatrix = [];
 var loadDesign = function(nameOfTheDesign){
 		
 	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
-	url = 'http://192.168.2.11:8080/api/todos/text/' + nameOfTheDesign; 
+	url = 'http://192.168.2.8:8080/api/todos/text/' + nameOfTheDesign; 
 	d3.json(url, function(error, data){
 	orderOfUpdatedMatrix = data[0]["order"] 	
 	nosOfRows = data[0]["order"][0];
@@ -514,7 +514,7 @@ console.log(orderOfUpdatedMatrix);
 var name = document.getElementById("nameOfEditedDesign").value;
 	colorsOfElementUpdated()
 	//console.log(typeof(name));
-  d3.xhr('http://192.168.2.11:8080/api/todos/')
+  d3.xhr('http://192.168.2.8:8080/api/todos/')
     .header("Content-Type", "application/json")
     .post(
         JSON.stringify({
@@ -731,11 +731,11 @@ var animateDesignLeftUpRightDown = function(){
 		});
 }
 
-var animateDesignLeftDownRightUp = function(){
+var animateDesignLeftDownRightUp = function(elapsed){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -753,13 +753,10 @@ var animateDesignLeftDownRightUp = function(){
 }
 
 var animateRepeat = function(){
-	console.log("Hey!")
-	for(var i = 0; i <= 29; i++){	
-		console.log("hey");
-		animateDesignLeftDownRightUp();
-	}
+	console.log("hey!");
+	//d3.timer();
+	setInterval(animateDesignLeftDownRightUp, 10);
 }
-
 
 	</script>
 </body>
