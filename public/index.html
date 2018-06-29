@@ -164,6 +164,7 @@
            			value="animateRepeat" 
            			onclick="animateRepeat()" />	
 		</div>
+		<div id="sliderForSpeed"> </div>
 	</div>
 	
 	<script>
@@ -230,7 +231,26 @@
               							.attr("y", function(){ return row * 15;})
               							.attr("width",  14)
               							.attr("height", 14).style('fill', "white").style('stroke-width', 0.7).style('stroke', "black")
-								.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
+								.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;});})
+								.on("mousedown", function(d){
+
+									  var div = d3.select(this)
+      									.classed("active", true);
+							  var w = d3.selectAll("#chart rect")
+      								.on("mousemove", mousemove)
+								.on("mouseup", mouseup);
+
+      					
+								  d3.event.preventDefault(); // disable text dragging
+							function mousemove() {
+    										d3.select(this).style('fill', function(){var color = onchangeColor(); return color;});
+}
+function mouseup() {
+    div.classed("active", false);
+    w.on("mousemove", null).on("mouseup", null);
+  }
+
+})
 								.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
 								//console.log("You hit me!");
 							}	
@@ -371,7 +391,7 @@ function updateDesign(){
 		order: orderData, 
 		pixel: globalPixelData })
     );
-	
+	alert("Save!");
 }
 
 
@@ -522,6 +542,7 @@ var name = document.getElementById("nameOfEditedDesign").value;
 		order: orderOfUpdatedMatrix, 
 		pixel: globalPixelDataUpdate })
     );
+	alert("Save");
 }
 
 
@@ -755,9 +776,12 @@ var animateDesignLeftDownRightUp = function(elapsed){
 var animateRepeat = function(){
 	console.log("hey!");
 	//d3.timer();
-	setInterval(animateDesignLeftDownRightUp, 10);
+	setInterval(animateDesignLeftDownRightUp, 300);
 }
-
+function myStopFunction() {
+	console.log("hey!");
+    clearInterval(animateRepeat);
+}
 	</script>
 </body>
 </html>
