@@ -162,12 +162,24 @@
     			<input name="animateRepeat" 
           			 type="button" 
            			value="animateRepeat" 
-           			onclick="animateRepeat()" />	
+           			onclick="animateRepeat(30)" />
+	
 		</div>
-		<div id="sliderForSpeed"> </div>
+		<div id="animateStop">
+    			<input name="animateRepeatStop" 
+          			 type="button" 
+           			value="animateRepeatStop" 
+           			onclick="myStopFunction()" />
+	
+		</div>		
+		  <input type="range" min="10" max="100" id="nRadius">
+		
 	</div>
 	
 	<script>
+
+		
+
 		var margin = { top: 50, right: 0, bottom: 100, left: 30 },
           	width =  500 - margin.left - margin.right,
           	height = 500 - margin.top - margin.bottom,
@@ -381,7 +393,10 @@ function updateDesign(){
 	orderData.push(onchangeColumn());
 	//nameOfDesignF();
 	var name = document.getElementById("nameOfDesign").value + orderData.toString();
-	colorsOfElement()
+	colorsOfElement();
+/*	var dataToPut = JSON.stringify({text: name, 
+		order: orderData, 
+		pixel: globalPixelData });*/
 	//console.log(typeof(name));
   d3.xhr('http://192.168.2.8:8080/api/todos/')
     .header("Content-Type", "application/json")
@@ -391,7 +406,24 @@ function updateDesign(){
 		order: orderData, 
 		pixel: globalPixelData })
     );
-	alert("Save!");
+	
+	/*d3.json('https://http://192.168.2.8:8080/api/todos/', {
+      method:"POST",
+      body: JSON.stringify({
+        	text: name, 
+		order: orderData, 
+		pixel: globalPixelData
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    });/*
+    //.then(function(){alert("Save!");});
+*/
+  /*d3.request("http://192.168.2.8:8080/api/todos/")
+  .header("Content-Type", "application/json")
+  .post(dataToPut, function (error,data) {console.log(data);});*/
+
 }
 
 
@@ -509,6 +541,25 @@ var loadDesign = function(nameOfTheDesign){
 								})								
 								.style('stroke-width', 0.7).style('stroke', "black")
 								.on("click", function(d){d3.select(this).style('fill', function(){var color = onchangeColor(); return color;}); })
+								.on("mousedown", function(d){
+
+									  var div = d3.select(this)
+      									.classed("active", true);
+							  var wEdit = d3.selectAll("#designView rect")
+      								.on("mousemove", mousemoveEdit)
+								.on("mouseup", mouseupEdit);
+
+      					
+								  d3.event.preventDefault(); // disable text dragging
+							function mousemoveEdit() {
+    										d3.select(this).style('fill', function(){var color = onchangeColor(); return color;});
+}
+function mouseupEdit() {
+    div.classed("active", false);
+    wEdit.on("mousemove", null).on("mouseup", null);
+  }
+
+})
 								.on("dblclick", function(d){d3.select(this).style('fill', "white"); onchangeColor();});
 
 });
@@ -550,7 +601,7 @@ var animateDesignLeft = function(){
 	//globalPixelDataUpdate = [];	
 	nosOfColumn = orderOfUpdatedMatrix[1];
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -568,7 +619,7 @@ var animateDesignRight = function(){
 	nosOfColumn = orderOfUpdatedMatrix[1];
 	colorsOfElementUpdated(); 
 	lengthOfArray = globalPixelDataUpdate.length; console.log(lengthOfArray);
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		 //var plusOne = i + 1; 
@@ -588,7 +639,7 @@ var animateDesignUp = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -605,7 +656,7 @@ var animateDesignDown = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -622,7 +673,7 @@ var animateDesignDiagonalRightUp = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -640,7 +691,7 @@ var animateDesignDiagonaLeftUp = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -658,7 +709,7 @@ var animateDesignDiagonalLeftDown = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -676,7 +727,7 @@ var animateDesignDiagonalRightDown = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -694,7 +745,7 @@ var animateDesignUpLeftDownRight = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -714,7 +765,7 @@ var animateDesignUpRightDownLeft = function(){
 	nosOfColumn = parseInt(orderOfUpdatedMatrix[1]);
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -735,7 +786,7 @@ var animateDesignLeftUpRightDown = function(){
 	nosOfRows = parseInt(orderOfUpdatedMatrix[0]);
 	
 	colorsOfElementUpdated(); 
-	d3.selectAll("#designView rect").transition().duration(100).style("fill", function(d, i){
+	d3.selectAll("#designView rect").style("fill", function(d, i){
 		//console.log(i);
 		 //console.log(globalPixelDataUpdate[i + 1]);
 		// var plusOne = i + 1; 
@@ -773,15 +824,54 @@ var animateDesignLeftDownRightUp = function(elapsed){
 		});
 }
 
-var animateRepeat = function(){
-	console.log("hey!");
+var continueAnimation = null;
+
+var animateRepeat = function(frames){
+	//console.log("hey!");
 	//d3.timer();
-	setInterval(animateDesignLeftDownRightUp, 300);
-}
+	//if(stop == 1){ console.log(speed);clearInterval(startAnimation);}
+	//var startAnimation = setTimeout(animateDesignLeftDownRightUp, speed);
+	var selectValue = parseInt(d3.select('#nRadius').property('value'));
+	var partTwo;	
+	console.log( "speed", selectValue);
+	var interval = 4 * (selectValue * frames) + 100; console.log("total time", interval);
+	animationsToBeLoaded(frames, selectValue, partTwo);
+	continueAnimation = setInterval(function(){
+	animationsToBeLoaded(frames, selectValue, partTwo);
+	}, interval);
+	
+ }
+
+
+
 function myStopFunction() {
-	console.log("hey!");
-    clearInterval(animateRepeat);
+	//console.log(continueAnimation);
+    clearInterval(continueAnimation); continueAnimation = null; console.log("Yep");
 }
+
+
+var animationsToBeLoaded = function(frames, selectValue, partTwo){
+	for (var i = 0; i <frames; i++){
+	setTimeout(animateDesignLeft, i*selectValue);}
+	partTwo = 0;	
+	partTwo = partTwo + selectValue + i *selectValue; console.log( "part 2", partTwo);
+	for (var i = 0; i <frames; i++){
+	setTimeout(animateDesignUp, ( (i*selectValue) + partTwo));}
+	partTwo = partTwo + selectValue + i *selectValue; console.log( "part 2", partTwo);
+	for (var i = 0; i <frames; i++){
+	setTimeout(animateDesignRight, ( (i*selectValue) + partTwo));}	
+	partTwo = partTwo + selectValue + i *selectValue; console.log( "part 2", partTwo);
+	for (var i = 0; i <frames; i++){
+	setTimeout(animateDesignDown, ( (i*selectValue) + partTwo));}
+}
+
+
+/************************/
+
+
+/******/
+
+
 	</script>
 </body>
 </html>
