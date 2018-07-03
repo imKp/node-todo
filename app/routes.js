@@ -1,4 +1,5 @@
 var Todo = require('./models/todo');
+var Animation =  require('./models/animation');
 
 function getTodos(res) {
     Todo.find(function (err, todos) {
@@ -12,6 +13,18 @@ function getTodos(res) {
     });
 };
 
+
+function getAnimation(res) {
+    Animation.find(function (err, animations) {
+
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err) {
+            res.send(err);
+        }
+
+        res.json(animations); // return all todos in JSON format
+    });
+};
 
 
 
@@ -78,6 +91,11 @@ module.exports = function (app) {
         getTodos(res);
     });
 
+    app.get('/api/animations', function (req, res) {
+        // use mongoose to get all todos in the database
+        getAnimation(res);
+    });
+
 app.get('/api/todos/id/:todo_id', function (req, res) {
         // use mongoose to get all todos in the database
          Todo.find({
@@ -115,13 +133,13 @@ app.get('/api/todos/order/:todo_order', function (req, res) {
     });
 
     // create todo and send back all todos after creation
-    app.post('/api/todos', function (req, res) {
+app.post('/api/todos', function (req, res) {
 
         // create a todo, information comes from AJAX request from Angular
         Todo.create({
             text: req.body.text,
-	    order:req.body.order,
-	    pixel:req.body.pixel,			
+	        order:req.body.order,
+	        pixel:req.body.pixel,			
             done: false
         }, function (err, todo) {
             if (err)
@@ -133,6 +151,23 @@ app.get('/api/todos/order/:todo_order', function (req, res) {
 
     });
 
+    app.post('/api/animations', function (req, res) {
+
+        // create a todo, information comes from AJAX request from Angular
+        Animation.create({
+            animation: req.body.animation,			
+            done: false
+        }, function (err, animation) {
+            if (err)
+                res.send(err);
+
+            // get and return all the todos after you create another
+            getAnimation(res);
+        });
+
+    });
+
+
     // delete a todo
     app.delete('/api/todos/:todo_id', function (req, res) {
         Todo.remove({
@@ -142,6 +177,17 @@ app.get('/api/todos/order/:todo_order', function (req, res) {
                 res.send(err);
 
             getTodos(res);
+        });
+    });
+
+    app.delete('/api/animations/:animation_id', function (req, res) {
+        Animation.remove({
+            _id: req.params.animation_id
+        }, function (err, animation) {
+            if (err)
+                res.send(err);
+
+            getAnimation(res);
         });
     });
 

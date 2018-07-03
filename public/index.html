@@ -172,8 +172,15 @@
            			onclick="myStopFunction()" />
 	
 		</div>		
-		  <input type="range" min="10" max="100" id="nRadius">
+		<div>  <input type="range" min="10" max="100" id="nRadius"></div>
 		
+		<div id="animationsMenu" align="left"></div>
+		<div id="numberOfFrames" align="left"></div>
+		<div id="trapAnimations">
+    			<input name="trapAnimationsBtn" 
+          			 type="button" 
+           			value="Create Animation" 
+           			onclick="createAnimation()" /></div>
 	</div>
 	
 	<script>
@@ -375,7 +382,6 @@ function onchangeColumn() {
 };
 
 
-
 /*function updateDesignNew(){
   d3.xhr('http://localhost:8080/api/todos')
     .header("Content-Type", "application/json")
@@ -460,7 +466,8 @@ var titleToGuide = ["Look For your Designs Here"];
 var designSearchDD = d3.select('#searchDesignDD')
   .append('select')
   	.attr('class','select')
-	.attr('size',5);
+	.attr('size',5)
+	.attr('id', 'designFromDb');
 	//.on("click", function(){console.log("Yep Hit Me!"); nameOfTheDesign();});	
 	
 
@@ -482,7 +489,7 @@ function retriveNames(){
 			.data(designNamesFromdb).enter()
 			.append('option').sort(d3.ascending)
 			.text(function (d){ return d;})
-			.on("dblclick", function(){ nameOfTheDesign = d3.select(this).property('value');/*console.log("Yep Hit Me!"); console.log(nameOfTheDesign);*/ loadDesign(nameOfTheDesign);});	
+			.on("click", function(){ nameOfTheDesign = d3.select(this).property('value');/*console.log("Yep Hit Me!"); console.log(nameOfTheDesign);*/ loadDesign(nameOfTheDesign);});	
 	});
 }
 
@@ -554,6 +561,8 @@ var loadDesign = function(nameOfTheDesign){
 							function mousemoveEdit() {
     										d3.select(this).style('fill', function(){var color = onchangeColor(); return color;});
 }
+
+
 function mouseupEdit() {
     div.classed("active", false);
     wEdit.on("mousemove", null).on("mouseup", null);
@@ -871,6 +880,123 @@ var animationsToBeLoaded = function(frames, selectValue, partTwo){
 
 /******/
 
+/*
+function addElement(parentId, elementTag, elementId, html) {
+    // Adds an element to the document
+    var p = document.getElementById(parentId);
+    var newElement = document.createElement(elementTag);
+    newElement.setAttribute('id', elementId);
+    newElement.innerHTML = html;
+    p.appendChild(newElement);
+}
+
+function removeElement(elementId) {
+    // Removes an element from the document
+    var element = document.getElementById(elementId);
+    element.parentNode.removeChild(element);
+}
+
+
+	var fileId = 0; // used by the addFile() function to keep track of IDs
+function addFile() {
+    fileId++; // increment fileId to get a unique ID for the new element
+    var html = ' <input type="file" name="uploaded_files[]" /input> ' +  ' <input type="file" name="uploaded_files[]" /input> ';
+               //'<a href=" " onclick="removeElement('file-' + fileId + ''); return false;"> Remove </a>';
+    addElement('files', 'p', 'file-' + fileId, html);
+}
+*/
+/***/
+var dataAnimations = ["Left", "Right", "Up", "Down", "Digonal Left Up", "Digonal Right Up", "Digonal Left Down", "Digonal Right Up", "Half Left", "Half Right", "Half Up", "Half Down"];
+
+var dataAnimationsVar = d3.select('#animationsMenu')
+  				.append('select')
+  				.attr('class','select');
+	
+
+var dataAnimationsOptions = dataAnimationsVar
+  				.selectAll('option')
+				.data(dataAnimations).enter()
+				.append('option')
+				.text(function (d) { return d; });
+/***/
+
+var framesData = [];
+
+framesDataFunc = function(){
+	var tempFramesData = []
+	for(i = 1; i <= 50; i++){
+		tempFramesData.push(i);
+		//console.log(tempRowData);
+	}
+	
+	return tempFramesData;
+}
+
+framesData = framesDataFunc(); 
+
+var numberOfFrames = d3.select('#numberOfFrames')
+  			.append('select')
+  			.attr('class','select');
+	
+var totalFrames = numberOfFrames.selectAll('option')
+				.data(framesData)
+				.enter().append('option')
+					.text(function (d) { return d; });
+
+/****/
+
+var animationFrameNumber = 1;
+function createAnimation(){
+ 
+	var theNameLoaded = '#animationsMenu' + ' #newAnimation' + 1;
+	
+	var theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + 1;  
+
+
+	var theName = 'newAnimation' + animationFrameNumber;
+
+	var theFrame = 'frameNumber' + animationFrameNumber;
+	
+
+	nosOfFrames = d3.select('#numberOfFrames select').property('value');
+	theAnimation = d3.select('#animationsMenu select').property('value');
+	//console.log("Frames", nosOfFrames);
+	//console.log("Animations", theAnimation);
+	//console.log("Frames Data", framesData);	
+	//totalFrames;
+	var numberOfFrames = d3.select('#numberOfFrames')
+  	  			.append('select')
+  	  			.attr('class','select')
+				.attr("id", function(){return theFrame;});
+
+	var totalFrames = numberOfFrames
+  				.selectAll('option')
+				.data(framesData).enter()
+				.append('option')
+				.text(function (d) {return d; });
+
+
+	var dataAnimationsVar = d3.select('#animationsMenu')
+  				.append('select')
+  				.attr('class','select')
+				.attr("id", function(){return theName;});
+
+
+	var dataAnimationsOptions = dataAnimationsVar
+  					.selectAll('option')
+					.data(dataAnimations).enter()
+					.append('option')
+					.text(function (d) { return d; });
+	
+	var nameOfAnimation = d3.select(theNameLoaded).property('value');
+	var nosOfFrames = d3.select(theFramesLoaded).property('value');
+	var nameOfDesignLoaded = d3.select('#designFromDb').property('value');
+	console.log(nameOfAnimation);
+	console.log(nosOfFrames); 
+	animationFrameNumber++;
+	console.log(animationFrameNumber);
+	console.log(nameOfDesignLoaded);
+}
 
 	</script>
 </body>
