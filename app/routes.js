@@ -27,6 +27,20 @@ function getAnimation(res) {
 };
 
 
+function getAnimationName(res,name) {
+Animation.find({name: name},
+function (err, animations) {
+
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err) {
+            res.send(err);
+        }
+
+        res.json(animations); // return all todos in JSON format
+    });
+};
+
+
 
 function getTodosId(res,id) {
 
@@ -61,6 +75,7 @@ function (err, todos) {
 };
 
 
+
 function getTodosOrder(res,order) {
 	
 	var requestedOrder = JSON.parse(order);
@@ -91,7 +106,7 @@ module.exports = function (app) {
         getTodos(res);
     });
 
-    app.get('/api/animations', function (req, res) {
+    app.get('/api/animation', function (req, res) {
         // use mongoose to get all todos in the database
         getAnimation(res);
     });
@@ -117,6 +132,20 @@ app.get('/api/todos/text/:todo_text', function (req, res) {
                 res.send(err);
 
             getTodosText(res, req.params.todo_text);
+        });
+    });
+
+    
+
+app.get('/api/animation/name/:animation_name', function (req, res) {
+        // use mongoose to get all todos in the database
+         Animation.find({
+            name: req.params.animation_name
+        }, function (err, animations) {
+            if (err)
+                res.send(err);
+
+            getAnimationName(res, req.params.animation_name);
         });
     });
 
@@ -151,11 +180,12 @@ app.post('/api/todos', function (req, res) {
 
     });
 
-    app.post('/api/animations', function (req, res) {
+    app.post('/api/animation', function (req, res) {
 
         // create a todo, information comes from AJAX request from Angular
         Animation.create({
-            animation: req.body.animation,			
+            animation: req.body.animation,
+            name: req.body.name,    			
             done: false
         }, function (err, animation) {
             if (err)
@@ -180,7 +210,7 @@ app.post('/api/todos', function (req, res) {
         });
     });
 
-    app.delete('/api/animations/:animation_id', function (req, res) {
+    app.delete('/api/animation/:animation_id', function (req, res) {
         Animation.remove({
             _id: req.params.animation_id
         }, function (err, animation) {

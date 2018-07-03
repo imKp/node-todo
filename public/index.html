@@ -150,7 +150,8 @@
 					</div>
 					<div id="removeFrame">
 						<input name="removeFrameBtn" type="button" value="Remove Last Frame" onclick="removeLastFrame()" />
-					</div>	
+					</div>
+					<input type="text" id="nameOfAnimation">		
 					<div id="createAnimation">
 						<input name="createAnimationBtn" type="button" value="Create Animation" onclick="createAnimation()" />
 					</div>	
@@ -1007,7 +1008,7 @@
 						var nameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
 						var timeForFrame = 	d3.select(timeOfTheFrameChangeLoaded).property('value');
 						//Name Of Animation
-						console.log("name of animation", nameOfAnimation); globalAnimationFile.push(nameOfAnimation);
+						console.log("name of animation", nameOfAnimation); 
 
 						//Number of frames of the Animation
 						console.log("number of frames", nosOfFrames); globalAnimationFile.push(nosOfFrames);
@@ -1041,9 +1042,9 @@
 						alert("Save");*/
 					}
 				var removeLastFrame = function(){
-					console.log(d3.select('#animationsMenu #newAnimation1').property('value'));	
+					//console.log(d3.select('#animationsMenu #newAnimation1').property('value'));	
 					
-					console.log(animationFrameNumber);
+					//console.log(animationFrameNumber);
 					
 					animationFrameNumber--;	
 					
@@ -1062,25 +1063,49 @@
 				}	
 
 				var createAnimation = function(){
-					console.log(animationFrameNumber);
-					var theNameLoaded = '#animationsMenu' + ' #newAnimation' + 1;
+					
+					var animationData = [];
 
-					var theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + 1;
-					/*for(var i = 0; i < animationFrameNumber; i++)
+					var theNameLoaded, theFramesLoaded, designOnAnimationLoaded, timeOfTheFrameChangeLoaded; 
+
+					var nameOfAnimation, nosOfFrames, nameOfDesignForAni, timeForFrame;
+
+					var nameForThisAnimation = document.getElementById("nameOfAnimation").value;
+
+					for(var i = 1; i < animationFrameNumber; i++)
 						{
+							theNameLoaded = '#animationsMenu' + ' #newAnimation' + i;
+							theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + i;
+							designOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + i;
+							timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + i;
+							
 
 
-							//This Stores The Animation applied to frame	
-							console.log(nameOfAnimation); globalAnimationFile.push(nameOfAnimation);
+							nameOfAnimation = d3.select(theNameLoaded).property('value');
+							animationData.push(nameOfAnimation);	
 
+							nosOfFrames = d3.select(theFramesLoaded).property('value');
+							animationData.push(nosOfFrames);
 
-							//Number of frames the Animation was applied
-							console.log(nosOfFrames); globalAnimationFile.push(nosOfFrames);
+							nameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
+							animationData.push(nameOfDesignForAni);
 
+							timeForFrame = 	d3.select(timeOfTheFrameChangeLoaded).property('value');
+							animationData.push(timeForFrame);
 
-							//This stores the name of design on which the given Animation is applied
-							console.log(nameOfDesignLoaded); globalAnimationFile.push(nameOfDesignLoaded);
-						}*/
+							console.log(nameOfAnimation, nosOfFrames, nameOfDesignForAni, timeForFrame);
+						}
+					
+						console.log(animationData); console.log(nameForThisAnimation);
+
+						d3.xhr('http://192.168.2.8:8080/api/animation/')
+						.header("Content-Type", "application/json")
+						.post(
+							JSON.stringify({
+								name: nameForThisAnimation,
+								animation: animationData  
+							})
+						);
 				} 
 
 	</script>
