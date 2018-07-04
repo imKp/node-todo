@@ -155,6 +155,13 @@
 					<div id="createAnimation">
 						<input name="createAnimationBtn" type="button" value="Create Animation" onclick="createAnimation()" />
 					</div>	
+					<div id="getAnimationFromDb">
+						<input name="getAnimationFromDbBtn" type="button" value="Load Animation" onclick="retriveAnimationNames()" />
+					</div>
+				
+					<div id="searchAnimationDD ">
+						<input name="searchAnimationDDBtn" type="button" value="Get Animation" onclick="getAnimationFromDb()" />
+					</div>
 	</div>
 
 				<script>
@@ -1108,6 +1115,66 @@
 						);
 				} 
 
+				var getAnimationFromDb = function (){
+					var animationObject = {};
+					var arrayAnimationData = [];
+					var animToBeDone = [];
+					var designAnimRequire = [];
+					var framesItWillMove = [];
+					var timeOfAFrame = [];  
+					var request = new XMLHttpRequest();
+					request.open('GET', 'http://192.168.2.8:8080/api/animation/name/first', false);  // `false` makes the request synchronous	
+					request.send(null);
+					
+
+					if (request.status === 200) {
+						  
+							animationObject = JSON.parse(request.responseText); 
+					}	
+
+					arrayAnimationData = animationObject[0] ["animation"];
+					for(var i = 0; i <= arrayAnimationData.length - 1; i += 4){
+
+						animToBeDone.push(arrayAnimationData[i]);
+						designAnimRequire.push(arrayAnimationData[i + 2]);
+						framesItWillMove.push(arrayAnimationData[i + 1]);
+						timeOfAFrame.push(arrayAnimationData[i + 3]);
+					}
+
+					console.log("Animation ", animToBeDone,"Name of Design ", designAnimRequire,"Nos. of frames ", framesItWillMove, "Time ", timeOfAFrame);
+				}
+				
+				
+				var AnimationSearchDD = d3.select('#getAnimationFromDb')
+						.append('select')
+						.attr('class', 'select')
+						.attr('size', 5)
+						.attr('id', 'animationFromDb');
+					//.on("click", function(){console.log("Yep Hit Me!"); nameOfTheDesign();});	
+
+				var animationDDmenuTitle = ["Look For Your Animation"];
+
+					var optionsAnimationsSaved = AnimationSearchDD
+						.selectAll('option')
+						.data(animationDDmenuTitle).enter()
+						.append('option')
+						.text(function (d) { return d; });	
+				
+				var retriveAnimationNames = function(){
+					var animationNamesFromdb = [];
+					d3.selectAll("#getAnimationFromDb option").remove();
+						d3.json("http://192.168.2.8:8080/api/animation", function (error, data, i) {
+							animationNamesFromdb = [];
+							for (var i = 0; i < data.length; i++) {
+								var animationSaved = animationNamesFromdb.push(data[i]["name"]);
+							}
+							AnimationSearchDD.selectAll('option')
+								.data(animationNamesFromdb).enter()
+								.append('option').sort(d3.ascending)
+								.text(function (d) { return d; })
+								.on("click", function () { nameOfTheAnimation = d3.select(this).property('value'); console.log(nameOfTheAnimation);});
+						});
+				}
 	</script>
 </body>
 
