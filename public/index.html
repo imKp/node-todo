@@ -159,8 +159,12 @@
 						<input name="getAnimationFromDbBtn" type="button" value="Load Animation" onclick="retriveAnimationNames()" />
 					</div>
 				
-					<div id="searchAnimationDD ">
+					<div id="searchAnimationDD">
 						<input name="searchAnimationDDBtn" type="button" value="Get Animation" onclick="getAnimationFromDb()" />
+					</div>
+
+					<div id="processAnimationFile">
+						<input name="processAnimationBtn" type="button" value="Process Animation" onclick="processAnimationFile()" />
 					</div>
 	</div>
 
@@ -169,7 +173,7 @@
 
 
 					var margin = { top: 50, right: 0, bottom: 100, left: 30 },
-						width = 500 - margin.left - margin.right,
+						width = 2000 - margin.left - margin.right,
 						height = 500 - margin.top - margin.bottom,
 						gridSize = Math.floor(width / 24),
 						legendElementWidth = gridSize * 2,
@@ -300,8 +304,8 @@
 					var matrixRowData = [];
 
 					matrixRowData = function () {
-						var tempRowData = []
-						for (i = 1; i <= 32; i++) {
+						var tempRowData = [1]
+						for (i = 1; i <= 52; i++) {
 							if (i % 2 == 0) { tempRowData.push(i); }
 							//console.log(tempRowData);
 						}
@@ -335,8 +339,8 @@
 					var globalFileName;
 
 					matrixColumnData = function () {
-						var tempColumnData = []
-						for (i = 1; i <= 32; i++) {
+						var tempColumnData = [1]
+						for (i = 1; i <= 52; i++) {
 							if (i % 2 == 0) { tempColumnData.push(i); }
 							//console.log(tempColumnData);
 						}
@@ -386,7 +390,7 @@
 								order: orderData, 
 								pixel: globalPixelData });*/
 						//console.log(typeof(name));
-						d3.xhr('http://192.168.2.8:8080/api/todos/')
+						d3.xhr('http://192.168.2.10:8080/api/todos/')
 							.header("Content-Type", "application/json")
 							.post(
 								JSON.stringify({
@@ -464,7 +468,7 @@
 
 					function retriveNames() {
 						d3.selectAll("#searchDesignDD option").remove();
-						d3.json("http://192.168.2.8:8080/api/todos", function (error, data, i) {
+						d3.json("http://192.168.2.10:8080/api/todos", function (error, data, i) {
 							designNamesFromdb = [];
 							for (var i = 0; i < data.length; i++) {
 								var optionsSaved = designNamesFromdb.push(data[i]["text"]);
@@ -512,7 +516,7 @@
 					var loadDesign = function (nameOfTheDesign) {
 
 	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
-						url = 'http://192.168.2.8:8080/api/todos/text/' + nameOfTheDesign;
+						url = 'http://192.168.2.10:8080/api/todos/text/' + nameOfTheDesign;
 						d3.json(url, function (error, data) {
 							orderOfUpdatedMatrix = data[0]["order"]
 							nosOfRows = data[0]["order"][0];
@@ -579,7 +583,7 @@
 						var name = document.getElementById("nameOfEditedDesign").value;
 						colorsOfElementUpdated()
 						//console.log(typeof(name));
-						d3.xhr('http://192.168.2.8:8080/api/todos/')
+						d3.xhr('http://192.168.2.10:8080/api/todos/')
 							.header("Content-Type", "application/json")
 							.post(
 								JSON.stringify({
@@ -867,7 +871,7 @@
 
 					/************************/
 
-					var dataAnimations = ["Left", "Right", "Up", "Down", "Digonal Left Up", "Digonal Right Up", "Digonal Left Down", "Digonal Right Up", "Half Left", "Half Right", "Half Up", "Half Down"];
+					var dataAnimations = ["Left", "Right", "Up", "Down", "Digonal Left Up", "Digonal Right Up", "Digonal Left Down", "Digonal Right Down", "Half Left", "Half Right", "Half Up", "Half Down"];
 
 					var dataAnimationsVar = d3.select('#animationsMenu')
 						.append('select')
@@ -1105,7 +1109,7 @@
 					
 						console.log(animationData); console.log(nameForThisAnimation);
 
-						d3.xhr('http://192.168.2.8:8080/api/animation/')
+						d3.xhr('http://192.168.2.10:8080/api/animation/')
 						.header("Content-Type", "application/json")
 						.post(
 							JSON.stringify({
@@ -1122,8 +1126,12 @@
 					var designAnimRequire = [];
 					var framesItWillMove = [];
 					var timeOfAFrame = [];  
+					var nameOfAnimationLoaded = d3.select('#animationFromDb').property('value');	
+					var nameAnimationString = [nameOfAnimationLoaded.toString()];
+					console.log(nameAnimationString); 
+					urlForAnimation = 'http://192.168.2.10:8080/api/animation/name/' + nameOfAnimationLoaded.toString(); 
 					var request = new XMLHttpRequest();
-					request.open('GET', 'http://192.168.2.8:8080/api/animation/name/first', false);  // `false` makes the request synchronous	
+					request.open('GET', urlForAnimation, false);  // `false` makes the request synchronous	
 					request.send(null);
 					
 
@@ -1161,9 +1169,10 @@
 						.text(function (d) { return d; });	
 				
 				var retriveAnimationNames = function(){
+					
 					var animationNamesFromdb = [];
 					d3.selectAll("#getAnimationFromDb option").remove();
-						d3.json("http://192.168.2.8:8080/api/animation", function (error, data, i) {
+						d3.json("http://192.168.2.10:8080/api/animation", function (error, data, i) {
 							animationNamesFromdb = [];
 							for (var i = 0; i < data.length; i++) {
 								var animationSaved = animationNamesFromdb.push(data[i]["name"]);
@@ -1174,6 +1183,112 @@
 								.text(function (d) { return d; })
 								.on("click", function () { nameOfTheAnimation = d3.select(this).property('value'); console.log(nameOfTheAnimation);});
 						});
+				}
+
+				var processAnimationFile = function(){
+					console.log("Yay you hit me!");
+					var arrayAnimationData = [];
+					var animToBeDone = [];
+					var designAnimRequire = [];
+					var framesItWillMove = [];
+					var timeOfAFrame = [];
+					var nameOfAnimationLoaded = d3.select('#animationFromDb').property('value');	
+					var nameAnimationString = [nameOfAnimationLoaded.toString()];
+					var urlOfAnimation = "http://192.168.2.10:8080/api/animation/name/" + nameAnimationString;  
+					pixelsFrameByFrame = [];
+					d3.json(urlOfAnimation, function(data){
+						console.log(data[0]["animation"]);
+						
+					arrayAnimationData = data[0]["animation"];
+					for(var i = 0; i <= arrayAnimationData.length - 1; i += 4){
+
+						animToBeDone.push(arrayAnimationData[i]);
+						designAnimRequire.push(arrayAnimationData[i + 2]);
+						framesItWillMove.push(arrayAnimationData[i + 1]);
+						timeOfAFrame.push(arrayAnimationData[i + 3]);
+					}
+
+					console.log("Animation ", animToBeDone,"Name of Design ", designAnimRequire,"Nos. of frames ", framesItWillMove, "Time ", timeOfAFrame);
+					for(var theAnimationIterator = 0; theAnimationIterator <= designAnimRequire.length -1; theAnimationIterator++){
+								urlOfDesign = 'http://192.168.2.10:8080/api/todos/text/' + designAnimRequire[theAnimationIterator];
+								counterRaise = 0;
+								d3.json(urlOfDesign, function(d){
+								console.log("The Iterator", counterRaise);
+								animatedPixelGenrator(d[0]["order"], d[0]["pixel"], animToBeDone[counterRaise], framesItWillMove[counterRaise]);
+								counterRaise++;
+							});
+						}
+					});
+					for(var i = 0; i <= 50; i++){
+						
+					}
+				}
+
+				function animatedPixelGenrator(matrixOrder, pixel, animToBeDone, framesItWillMove){
+					var pixelAnimationData = [];
+					var currentPixelData = 	[];
+					if(animToBeDone === "Left"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+							//console.log(pixel);
+						}
+						
+					}
+					else if(animToBeDone === "Right"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Up"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Down"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Digonal Left Up"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Digonal Right Up"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Digonal Left Down"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Digonal Right Down"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Half Left"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}	
+					}
+					else if(animToBeDone === "Half Right"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Half Up"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}
+					else if(animToBeDone === "Half Down"){
+						for(var i = 1; i <= framesItWillMove; i++){
+							console.log("The Animation Performed is " + animToBeDone);
+						}
+					}	
 				}
 	</script>
 </body>
