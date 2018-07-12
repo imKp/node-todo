@@ -77,6 +77,10 @@
 			<input name="updateButton" type="button" value="Save Design" onclick="updateDesign()" />
 		</div>
 
+		<div id="animatePlay">
+			<input name="animatePlayBtn" type="button" value="Play Animation" onclick="syncPlayAnimation()" />
+
+		</div>
 		<div id="searchDesignDD">
 			<input name="searchDesignDDButton" type="button" value="Load Design" onclick="retriveNames()" />
 		</div>
@@ -135,6 +139,7 @@
 						<input name="animateRepeatStop" type="button" value="animateRepeatStop" onclick="myStopFunction()" />
 
 					</div>
+					
 					<div>
 						<input type="range" min="10" max="100" id="nRadius">
 					</div>
@@ -147,6 +152,12 @@
 					
 					<div id="addFrames">
 						<input name="addFramesBtn" type="button" value="Add Frame" onclick="addAFrame()" />
+					</div>
+					<div id="showMe">
+						<input name="showMeBtn" type="button" value="Show Me" onclick="showMeFunc()" />
+					</div>
+					<div id="addMe">
+						<input name="addMeBtn" type="button" value="Add Me" onclick="addMeFunc()" />
 					</div>
 					<div id="removeFrame">
 						<input name="removeFrameBtn" type="button" value="Remove Last Frame" onclick="removeLastFrame()" />
@@ -390,7 +401,7 @@
 								order: orderData, 
 								pixel: globalPixelData });*/
 						//console.log(typeof(name));
-						d3.xhr('http://192.168.2.10:8080/api/todos/')
+						d3.xhr('http://192.168.2.13:8080/api/todos/')
 							.header("Content-Type", "application/json")
 							.post(
 								JSON.stringify({
@@ -468,7 +479,7 @@
 
 					function retriveNames() {
 						d3.selectAll("#searchDesignDD option").remove();
-						d3.json("http://192.168.2.10:8080/api/todos", function (error, data, i) {
+						d3.json("http://192.168.2.13:8080/api/todos", function (error, data, i) {
 							designNamesFromdb = [];
 							for (var i = 0; i < data.length; i++) {
 								var optionsSaved = designNamesFromdb.push(data[i]["text"]);
@@ -516,7 +527,7 @@
 					var loadDesign = function (nameOfTheDesign) {
 
 	/*console.log(nameOfTheDesign);*/d3.selectAll("#designView rect").remove();
-						url = 'http://192.168.2.10:8080/api/todos/text/' + nameOfTheDesign;
+						url = 'http://192.168.2.13:8080/api/todos/text/' + nameOfTheDesign;
 						d3.json(url, function (error, data) {
 							orderOfUpdatedMatrix = data[0]["order"]
 							nosOfRows = data[0]["order"][0];
@@ -583,7 +594,7 @@
 						var name = document.getElementById("nameOfEditedDesign").value;
 						colorsOfElementUpdated()
 						//console.log(typeof(name));
-						d3.xhr('http://192.168.2.10:8080/api/todos/')
+						d3.xhr('http://192.168.2.13:8080/api/todos/')
 							.header("Content-Type", "application/json")
 							.post(
 								JSON.stringify({
@@ -598,6 +609,7 @@
 
 					var animateDesignLeft = function () {
 						//globalPixelDataUpdate = [];	
+						//console.log("Animation Called");
 						nosOfColumn = orderOfUpdatedMatrix[1];
 						colorsOfElementUpdated();
 						d3.selectAll("#designView rect").style("fill", function (d, i) {
@@ -681,7 +693,7 @@
 							if (i == (nosOfRows * nosOfColumn) - 1) { color = 'rgb(' + globalPixelDataUpdate[0].toString() + ')'; return color; }
 							else if (i >= ((nosOfColumn * nosOfRows) - nosOfColumn)) { color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn * nosOfRows) - nosOfColumn) + 1].toString() + ')'; return color; }
 							else if ((i % nosOfColumn) == (nosOfColumn - 1)) { color = 'rgb(' + globalPixelDataUpdate[i + 1].toString() + ')'; return color; }
-							else { console.log(nosOfColumn + 1 + i); color = 'rgb(' + globalPixelDataUpdate[nosOfColumn + 1 + i].toString() + ')'; return color; }
+							else { color = 'rgb(' + globalPixelDataUpdate[nosOfColumn + 1 + i].toString() + ')'; return color; }
 							//d3.select(this).style('fill', "white");	
 						});
 					}
@@ -699,7 +711,7 @@
 							if (i == (nosOfRows * nosOfColumn) - nosOfColumn) { color = 'rgb(' + globalPixelDataUpdate[nosOfColumn - 1].toString() + ')'; return color; }
 							else if (i > ((nosOfColumn * nosOfRows) - nosOfColumn)) { color = 'rgb(' + globalPixelDataUpdate[i - ((nosOfColumn * nosOfRows) - nosOfColumn) - 1].toString() + ')'; return color; }
 							else if ((i % nosOfColumn) == 0) { color = 'rgb(' + globalPixelDataUpdate[i + (2 * nosOfColumn) - 1].toString() + ')'; return color; }
-							else { console.log(nosOfColumn + 1 + i); color = 'rgb(' + globalPixelDataUpdate[nosOfColumn - 1 + i].toString() + ')'; return color; }
+							else { /*console.log(nosOfColumn + 1 + i);*/ color = 'rgb(' + globalPixelDataUpdate[nosOfColumn - 1 + i].toString() + ')'; return color; }
 							//d3.select(this).style('fill', "white");	
 						});
 					}
@@ -717,7 +729,7 @@
 							if (i == 0) { color = 'rgb(' + globalPixelDataUpdate[(nosOfColumn * nosOfRows) - 1].toString() + ')'; return color; }
 							else if (i <= (nosOfColumn - 1)) { color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn * nosOfRows) - nosOfColumn) - 1].toString() + ')'; return color; }
 							else if (i % (nosOfColumn) == 0) { color = 'rgb(' + globalPixelDataUpdate[i - 1].toString() + ')'; return color; }
-							else { console.log(nosOfColumn + 1 + i); color = 'rgb(' + globalPixelDataUpdate[i - nosOfColumn - 1].toString() + ')'; return color; }
+							else { /*console.log(nosOfColumn + 1 + i);*/ color = 'rgb(' + globalPixelDataUpdate[i - nosOfColumn - 1].toString() + ')'; return color; }
 							//d3.select(this).style('fill', "white");
 						});
 					}
@@ -735,7 +747,7 @@
 							if (i == (nosOfColumn) - 1) { color = 'rgb(' + globalPixelDataUpdate[(nosOfColumn * nosOfRows) - nosOfColumn].toString() + ')'; return color; }
 							else if (i <= (nosOfColumn - 2)) { color = 'rgb(' + globalPixelDataUpdate[i + ((nosOfColumn * nosOfRows) - nosOfColumn) + 1].toString() + ')'; return color; }
 							else if (i % (nosOfColumn) == (nosOfColumn - 1)) { color = 'rgb(' + globalPixelDataUpdate[i - (2 * nosOfColumn) + 1].toString() + ')'; return color; }
-							else { console.log(nosOfColumn + 1 + i); color = 'rgb(' + globalPixelDataUpdate[i - (nosOfColumn - 1)].toString() + ')'; return color; }
+							else { /*console.log(nosOfColumn + 1 + i);*/ color = 'rgb(' + globalPixelDataUpdate[i - (nosOfColumn - 1)].toString() + ')'; return color; }
 							//d3.select(this).style('fill', "white");
 						});
 					}
@@ -870,8 +882,8 @@
 
 
 					/************************/
-
-					var dataAnimations = ["Left", "Right", "Up", "Down", "Digonal Left Up", "Digonal Right Up", "Digonal Left Down", "Digonal Right Down", "Half Left", "Half Right", "Half Up", "Half Down"];
+					
+					var dataAnimations = ["animateDesignLeft", "animateDesignRight", "animateDesignUp", "animateDesignDown", "animateDesignDiagonalRightUp", "animateDesignDiagonaLeftUp", "animateDesignDiagonalLeftDown", "animateDesignDiagonalRightDown", "animateDesignUpLeftDownRight", "animateDesignUpRightDownLeft", "animateDesignLeftUpRightDown", "animateDesignLeftDownRightUp"];
 
 					var dataAnimationsVar = d3.select('#animationsMenu')
 						.append('select')
@@ -922,11 +934,13 @@
 						.append('select')
 						.attr('class', 'select');
 
-					speedSetData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+					speedSetData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 					/****/
 
 					var animationFrameNumber = 1;
+
+					var tempAnimationData = [];
 
 					var globalAnimationFile = [];
 					function addAFrame() {
@@ -1033,6 +1047,13 @@
 
 						animationFrameNumber++;
 
+						/*colorsOfElementUpdated();
+						tempAnimationData.push(globalPixelDataUpdate);
+						console.log(globalPixelDataUpdate);
+						console.log(tempAnimationData[0]);
+
+							console.log(tempAnimationData[tempAnimationData.length - 1])*/
+						
 						//This counter Increases the id Nos. for any animation created.
 						//console.log(animationFrameNumber);
 
@@ -1040,8 +1061,9 @@
 						//console.log(nameOfDesignLoaded); globalAnimationFile.push(nameOfDesignLoaded);
 
 						if (nameOfDesignLoaded === "") { alert("No Name Found!") }
-
-
+						
+						$("#addFrames").hide();	
+						$("#addMe").show();
 						//console.log(globalAnimationFile);
 						/*d3.xhr('http://192.168.2.8:8080/api/animations/')
 						.header("Content-Type", "application/json")
@@ -1052,11 +1074,57 @@
 						);
 						alert("Save");*/
 					}
+
+					$(document).ready(function(){
+						$("#addMe").hide();
+					});
+
+
+				var addMeFunc = function(){
+
+					//console.log(animationFrameNumber-1);
+
+					theNameLoaded = '#animationsMenu' + ' #newAnimation' + (animationFrameNumber-1).toString();
+					theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + (animationFrameNumber-1).toString();
+					timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + animationFrameNumber - (animationFrameNumber-1).toString();
+					
+					
+					nosOfFrames = d3.select(theFramesLoaded).property('value');
+					nameOfAnimation = d3.select(theNameLoaded).property('value') ;
+
+					console.log(nosOfFrames);
+					console.log(nameOfAnimation);
+				
+					//Done to stop pollutiong the temp file
+					$("#addMe").hide(); 
+					$("#addFrames").show();
+					
+						
+				
+						colorsOfElementUpdated();
+						tempAnimationData.push(globalPixelDataUpdate);
+
+					for(var i = 1; i <= nosOfFrames; i++){
+						eval(nameOfAnimation.toString()).call();
+						colorsOfElementUpdated();
+						tempAnimationData.push(globalPixelDataUpdate);
+						//console.log(tempAnimationData[tempAnimationData.length - 1]);
+						//console.log(tempAnimationData.length);
+					
+					}
+
+				}	
+
+				var showMeFunc = function(){
+					
+				}	
+
 				var removeLastFrame = function(){
 					//console.log(d3.select('#animationsMenu #newAnimation1').property('value'));	
 					
 					//console.log(animationFrameNumber);
-					
+					$("#addMe").hide();
+					$("#addFrames").show();
 					animationFrameNumber--;	
 					
 					var animationRemove = '#animationsMenu #newAnimation' + animationFrameNumber;
@@ -1071,6 +1139,8 @@
 					d3.select(numberFramesRemove).remove();
 					d3.select(designNameRemove ).remove();
 					d3.select(timeForFrameRemove).remove();	
+					tempAnimationData.pop();
+					console.log("length ", tempAnimationData.length);
 				}	
 
 				var createAnimation = function(){
@@ -1109,7 +1179,7 @@
 					
 						console.log(animationData); console.log(nameForThisAnimation);
 
-						d3.xhr('http://192.168.2.10:8080/api/animation/')
+						d3.xhr('http://192.168.2.13:8080/api/animation/')
 						.header("Content-Type", "application/json")
 						.post(
 							JSON.stringify({
@@ -1129,7 +1199,7 @@
 					var nameOfAnimationLoaded = d3.select('#animationFromDb').property('value');	
 					var nameAnimationString = [nameOfAnimationLoaded.toString()];
 					console.log(nameAnimationString); 
-					urlForAnimation = 'http://192.168.2.10:8080/api/animation/name/' + nameOfAnimationLoaded.toString(); 
+					urlForAnimation = 'http://192.168.2.13:8080/api/animation/name/' + nameOfAnimationLoaded.toString(); 
 					var request = new XMLHttpRequest();
 					request.open('GET', urlForAnimation, false);  // `false` makes the request synchronous	
 					request.send(null);
@@ -1172,7 +1242,7 @@
 					
 					var animationNamesFromdb = [];
 					d3.selectAll("#getAnimationFromDb option").remove();
-						d3.json("http://192.168.2.10:8080/api/animation", function (error, data, i) {
+						d3.json("http://192.168.2.13:8080/api/animation", function (error, data, i) {
 							animationNamesFromdb = [];
 							for (var i = 0; i < data.length; i++) {
 								var animationSaved = animationNamesFromdb.push(data[i]["name"]);
@@ -1194,7 +1264,7 @@
 					var timeOfAFrame = [];
 					var nameOfAnimationLoaded = d3.select('#animationFromDb').property('value');	
 					var nameAnimationString = [nameOfAnimationLoaded.toString()];
-					var urlOfAnimation = "http://192.168.2.10:8080/api/animation/name/" + nameAnimationString;  
+					var urlOfAnimation = "http://192.168.2.13:8080/api/animation/name/" + nameAnimationString;  
 					pixelsFrameByFrame = [];
 					d3.json(urlOfAnimation, function(data){
 						console.log(data[0]["animation"]);
@@ -1210,18 +1280,18 @@
 
 					console.log("Animation ", animToBeDone,"Name of Design ", designAnimRequire,"Nos. of frames ", framesItWillMove, "Time ", timeOfAFrame);
 					for(var theAnimationIterator = 0; theAnimationIterator <= designAnimRequire.length -1; theAnimationIterator++){
-								urlOfDesign = 'http://192.168.2.10:8080/api/todos/text/' + designAnimRequire[theAnimationIterator];
+								urlOfDesign = 'http://192.168.2.13:8080/api/todos/text/' + designAnimRequire[theAnimationIterator];
 								counterRaise = 0;
 								d3.json(urlOfDesign, function(d){
+								if(counterRaise == 0){
+									console.log("Yep Zero");
+								}
 								console.log("The Iterator", counterRaise);
 								animatedPixelGenrator(d[0]["order"], d[0]["pixel"], animToBeDone[counterRaise], framesItWillMove[counterRaise]);
 								counterRaise++;
 							});
 						}
 					});
-					for(var i = 0; i <= 50; i++){
-						
-					}
 				}
 
 				function animatedPixelGenrator(matrixOrder, pixel, animToBeDone, framesItWillMove){
@@ -1230,7 +1300,7 @@
 					if(animToBeDone === "Left"){
 						for(var i = 1; i <= framesItWillMove; i++){
 							console.log("The Animation Performed is " + animToBeDone);
-							//console.log(pixel);
+							//processLeft(matrixOrder, pixel);
 						}
 						
 					}
@@ -1290,6 +1360,352 @@
 						}
 					}	
 				}
+
+			var processLeft = function(order, pixel){
+				console.log(pixel);
+				
+
+			}	
+
+			var playAnimation =function(){
+				
+				var theNameLoaded, theFramesLoaded, designOnAnimationLoaded, timeOfTheFrameChangeLoaded, pdesignOnAnimationLoaded; 
+
+				var nameOfAnimation, nosOfFrames, nameOfDesignForAni, timeForFrame, pnameOfDesignForAni;
+
+				var nameForThisAnimation = document.getElementById("nameOfAnimation").value;
+
+				for(let i = 1; i < animationFrameNumber; i++)
+				{
+					theNameLoaded = '#animationsMenu' + ' #newAnimation' + i;
+					theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + i;
+					designOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + i;
+					timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + i;
+					//pdesignOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + i;
+					
+					//console.log(nameOfAnimation);	
+
+					
+					//console.log(nosOfFrames);
+
+					nameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
+					//pnameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
+
+					//console.log(nameOfDesignForAni);
+					//console.log(pnameOfDesignForAni);
+
+					if( i-1 > 0){
+						console.log("Did enter this");
+						var indexOfData = i - 1;
+						pdesignOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + indexOfData;
+						pnameOfDesignForAni = d3.select(pdesignOnAnimationLoaded).property('value');	
+						console.log("Previous Design", pnameOfDesignForAni);
+					}
+					
+					//console.log(timeForFrame);
+
+					urlForDesign = 'http://192.168.2.13:8080/api/todos/text/' + nameOfDesignForAni;
+
+					//console.log(urlForDesign); 
+					var countI = 1;
+
+					if(i == 1 || pnameOfDesignForAni != nameOfDesignForAni){
+
+					d3.json(urlForDesign, function(data){
+						//console.log(animationFrameNumber);
+						console.log("Count I",typeof(countI.toString()));
+
+						theNameLoaded = '#animationsMenu' + ' #newAnimation' + countI;
+						theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + countI;
+						timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + countI;
+						
+						nosOfFrames = d3.select(theFramesLoaded).property('value');
+						timeForFrame = 	d3.select(timeOfTheFrameChangeLoaded).property('value');
+						nameOfAnimation = d3.select(theNameLoaded).property('value') + '()';
+						console.log(nameOfAnimation);	
+
+
+						d3.selectAll("#designView rect").remove();
+						var orderOfUpdatedMatrix = data[0]["order"]
+							var nosOfRows = data[0]["order"][0];
+							var nosOfColumn = data[0]["order"][1];
+							var pixelInfo = data[0]["pixel"];
+							//console.log(nosOfRows, nosOfColumn, pixelInfo);
+							designsvg.selectAll("#designView")
+								.data(pixelInfo).enter()
+								.append("rect")
+								.attr("x", function (d, i) { valueOfx = i % nosOfColumn; return valueOfx * 15; })
+								.attr("y", function (d, i) { valueOfy = Math.floor(i / nosOfColumn); return valueOfy * 15; })
+								.attr("width", 14)
+								.attr("height", 14).style('fill', function (d, i) {
+									//console.log(d.toString());
+									rgbValue = "rgb(" + d.toString() + ")";
+									return rgbValue;
+								})
+								.style('stroke-width', 0.7).style('stroke', "black")
+								.on("click", function (d) { d3.select(this).style('fill', function () { var color = onchangeColor(); return color; }); })
+								.on("mousedown", function (d) {
+
+									var div = d3.select(this)
+										.classed("active", true);
+									var wEdit = d3.selectAll("#designView rect")
+										.on("mousemove", mousemoveEdit)
+										.on("mouseup", mouseupEdit);
+
+
+									d3.event.preventDefault(); // disable text dragging
+									function mousemoveEdit() {
+										d3.select(this).style('fill', function () { var color = onchangeColor(); return color; });
+									}
+
+
+									function mouseupEdit() {
+										div.classed("active", false);
+										wEdit.on("mousemove", null).on("mouseup", null);
+									}
+
+								})
+								.on("dblclick", function (d) { d3.select(this).style('fill', "white"); onchangeColor(); }); 
+								//console.log("Frames", nosOfFrames);
+								//console.log("Time", timeForFrame);
+								
+								for(var i = 0; i < nosOfFrames; i++){
+								
+									setTimeout(nameOfAnimation, (200+((i-1)*10*timeForFrame)));
+				
+								}
+								countI++;
+								//console.log(countI);
+									
+						});
+					}
+					else if(pnameOfDesignForAni == nameOfDesignForAni){
+						console.log("Yes The Name is Same!");
+
+						nosOfFrames = d3.select(theFramesLoaded).property('value');
+						timeForFrame = 	d3.select(timeOfTheFrameChangeLoaded).property('value');
+						nameOfAnimation = d3.select(theNameLoaded).property('value') + '()';
+						console.log(nosOfFrames, timeForFrame, nameOfAnimation);
+						/*for(var iRepeat = 0; iRepeat < nosOfFrames; i++){
+								
+								setTimeout(nameOfAnimation, (2000+((iRepeat-1)*10*timeForFrame)));
+			
+							}*/
+					}
+					else{
+						console.log("Didn't catch anything");
+					}
+				}
+			}
+
+
+		
+
+
+			var alternatePlayAnimation =function(){
+				
+				var theNameLoaded, theFramesLoaded, designOnAnimationLoaded, timeOfTheFrameChangeLoaded, pdesignOnAnimationLoaded; 
+
+				var nameOfAnimation, nosOfFrames, nameOfDesignForAni, timeForFrame, pnameOfDesignForAni;
+
+				var nameForThisAnimation = document.getElementById("nameOfAnimation").value;
+
+				for(let i = 1; i < animationFrameNumber; i++)
+				{
+					theNameLoaded = '#animationsMenu' + ' #newAnimation' + i;
+					theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + i;
+					designOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + i;
+					timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + i;
+					//pdesignOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + i;
+					
+					//console.log(nameOfAnimation);	
+
+					
+					//console.log(nosOfFrames);
+
+					nameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
+					//pnameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
+
+					//console.log(nameOfDesignForAni);
+					//console.log(pnameOfDesignForAni);
+
+					
+					
+					//console.log(timeForFrame);
+
+					urlForDesign = 'http://192.168.2.13:8080/api/todos/text/' + nameOfDesignForAni;
+
+					//console.log(urlForDesign); 
+					var countI = i;
+
+					
+
+					d3.json(urlForDesign, function(data){
+						console.log("the I", i);
+						console.log("Count I",countI.toString());
+
+						theNameLoaded = '#animationsMenu' + ' #newAnimation' + countI;
+						theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + countI;
+						timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + countI;
+						
+						nosOfFrames = d3.select(theFramesLoaded).property('value');
+						timeForFrame = 	d3.select(timeOfTheFrameChangeLoaded).property('value');
+						nameOfAnimation = d3.select(theNameLoaded).property('value') + '()';
+						console.log(nameOfAnimation);	
+
+
+						d3.selectAll("#designView rect").remove();
+						var orderOfUpdatedMatrix = data[0]["order"]
+							var nosOfRows = data[0]["order"][0];
+							var nosOfColumn = data[0]["order"][1];
+							var pixelInfo = data[0]["pixel"];
+							//console.log(nosOfRows, nosOfColumn, pixelInfo);
+							designsvg.selectAll("#designView")
+								.data(pixelInfo).enter()
+								.append("rect")
+								.attr("x", function (d, i) { valueOfx = i % nosOfColumn; return valueOfx * 15; })
+								.attr("y", function (d, i) { valueOfy = Math.floor(i / nosOfColumn); return valueOfy * 15; })
+								.attr("width", 14)
+								.attr("height", 14).style('fill', function (d, i) {
+									//console.log(d.toString());
+									rgbValue = "rgb(" + d.toString() + ")";
+									return rgbValue;
+								})
+								.style('stroke-width', 0.7).style('stroke', "black")
+								.on("click", function (d) { d3.select(this).style('fill', function () { var color = onchangeColor(); return color; }); })
+								.on("mousedown", function (d) {
+
+									var div = d3.select(this)
+										.classed("active", true);
+									var wEdit = d3.selectAll("#designView rect")
+										.on("mousemove", mousemoveEdit)
+										.on("mouseup", mouseupEdit);
+
+
+									d3.event.preventDefault(); // disable text dragging
+									function mousemoveEdit() {
+										d3.select(this).style('fill', function () { var color = onchangeColor(); return color; });
+									}
+
+
+									function mouseupEdit() {
+										div.classed("active", false);
+										wEdit.on("mousemove", null).on("mouseup", null);
+									}
+
+								})
+								.on("dblclick", function (d) { d3.select(this).style('fill', "white"); onchangeColor(); }); 
+								//console.log("Frames", nosOfFrames);
+								//console.log("Time", timeForFrame);
+								
+								for(var i = 0; i < nosOfFrames; i++){
+								
+									setTimeout(nameOfAnimation, (200+((i-1)*10*timeForFrame)));
+				
+								}
+								//countI++;
+								//i = 3;
+								//console.log(countI);
+									
+						});
+				
+					
+				}
+			}
+
+			var syncPlayAnimation = function(){
+
+				var theNameLoaded, theFramesLoaded, designOnAnimationLoaded, timeOfTheFrameChangeLoaded, pdesignOnAnimationLoaded; 
+
+				var nameOfAnimation, nosOfFrames, nameOfDesignForAni, timeForFrame, pnameOfDesignForAni;
+				
+				console.log("In The Function");
+
+				for(var i = 1; i < animationFrameNumber; i++){
+					console.log("In The Function Loop");
+					theNameLoaded = '#animationsMenu' + ' #newAnimation' + i;
+					theFramesLoaded = '#numberOfFrames' + ' #frameNumber' + i;
+					designOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + i;
+					timeOfTheFrameChangeLoaded = '#timeForNxtFrame' + ' #timeForChange' + i;
+
+					nameOfDesignForAni = d3.select(designOnAnimationLoaded).property('value');
+
+					if( i-1 > 0){
+						console.log("Did enter this");
+						var indexOfData = i - 1;
+						pdesignOnAnimationLoaded = '#nameOfDesigninFrame' + ' #designInFrame' + indexOfData;
+						pnameOfDesignForAni = d3.select(pdesignOnAnimationLoaded).property('value');	
+						console.log("Previous Design", pnameOfDesignForAni);
+					}
+
+					urlForDesign = 'http://192.168.2.13:8080/api/todos/text/' + nameOfDesignForAni.toString();
+					
+					if(i == 1 || pnameOfDesignForAni != nameOfDesignForAni){
+						var request = new XMLHttpRequest();
+						request.open('GET', urlForDesign, false);  // `false` makes the request synchronous	
+						request.send(null);
+						data = {};
+
+						if (request.status === 200) {
+						  
+							data = JSON.parse(request.responseText);
+							d3.selectAll("#designView rect").remove();
+							var orderOfUpdatedMatrix = data[0]["order"]
+							var nosOfRows = data[0]["order"][0];
+							var nosOfColumn = data[0]["order"][1];
+							var pixelInfo = data[0]["pixel"];
+							console.log(nosOfRows, nosOfColumn, pixelInfo);
+							designsvg.selectAll("#designView")
+								.data(pixelInfo).enter()
+								.append("rect")
+								.attr("x", function (d, i) { valueOfx = i % nosOfColumn; return valueOfx * 15; })
+								.attr("y", function (d, i) { valueOfy = Math.floor(i / nosOfColumn); return valueOfy * 15; })
+								.attr("width", 14)
+								.attr("height", 14).style('fill', function (d, i) {
+									//console.log(d.toString());
+									rgbValue = "rgb(" + d.toString() + ")"; console.log("hi");
+									return rgbValue;
+								})
+								.style('stroke-width', 0.7).style('stroke', "black")
+								.on("click", function (d) { d3.select(this).style('fill', function () { var color = onchangeColor(); return color; }); })
+								.on("mousedown", function (d) {
+
+									var div = d3.select(this)
+										.classed("active", true);
+									var wEdit = d3.selectAll("#designView rect")
+										.on("mousemove", mousemoveEdit)
+										.on("mouseup", mouseupEdit);
+
+
+									d3.event.preventDefault(); // disable text dragging
+									function mousemoveEdit() {
+										d3.select(this).style('fill', function () { var color = onchangeColor(); return color; });
+									}
+
+
+									function mouseupEdit() {
+										div.classed("active", false);
+										wEdit.on("mousemove", null).on("mouseup", null);
+									}
+
+								})
+								.on("dblclick", function (d) { d3.select(this).style('fill', "white"); onchangeColor(); }); 
+								for(var newi = 0; newi < nosOfFrames; newi++){
+								console.log("Did Set Time Out");
+								setTimeout(nameOfAnimation, (200+((newi-1)*10*timeForFrame)));
+			
+							}
+						 
+						}
+
+						
+					}
+					
+					else{
+						console.log("Oops!");
+					}
+				}
+			}
 	</script>
 </body>
 
