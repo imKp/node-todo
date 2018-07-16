@@ -177,6 +177,13 @@
 					<div id="processAnimationFile">
 						<input name="processAnimationBtn" type="button" value="Process Animation" onclick="processAnimationFile()" />
 					</div>
+
+					<div id="generateTheCode">
+						<input name="generateTheCode" type="button" value="Generate Code" onclick="generateTheCodeFuncForNoSize()" />
+					</div>
+					<div>
+					<input type = "text"
+					id = "programOutput" /></div>>
 	</div>
 
 				<script>
@@ -317,7 +324,8 @@
 					matrixRowData = function () {
 						var tempRowData = [1]
 						for (i = 1; i <= 52; i++) {
-							if (i % 2 == 0) { tempRowData.push(i); }
+							//if (i % 2 == 0) { tempRowData.push(i); }
+							tempRowData.push(i);
 							//console.log(tempRowData);
 						}
 
@@ -352,7 +360,8 @@
 					matrixColumnData = function () {
 						var tempColumnData = [1]
 						for (i = 1; i <= 52; i++) {
-							if (i % 2 == 0) { tempColumnData.push(i); }
+							//if (i % 2 == 0) { tempColumnData.push(i); }
+							tempColumnData.push(i);
 							//console.log(tempColumnData);
 						}
 
@@ -1099,17 +1108,19 @@
 					$("#addMe").hide(); 
 					$("#addFrames").show();
 					
-						
-				
-						colorsOfElementUpdated();
-						tempAnimationData.push(globalPixelDataUpdate);
+						console.log("Animation frame Number", animationFrameNumber);
+						if(animationFrameNumber -1 == 1){
+									
+								colorsOfElementUpdated();
+								tempAnimationData.push(globalPixelDataUpdate);	
+						}
 
 					for(var i = 1; i <= nosOfFrames; i++){
 						eval(nameOfAnimation.toString()).call();
 						colorsOfElementUpdated();
 						tempAnimationData.push(globalPixelDataUpdate);
 						//console.log(tempAnimationData[tempAnimationData.length - 1]);
-						//console.log(tempAnimationData.length);
+						console.log(tempAnimationData.length);
 					
 					}
 
@@ -1706,7 +1717,162 @@
 					}
 				}
 			}
+
+			/*var generateTheCodeFunc = function(){
+				var pixelString, pixelStringComplete;
+				var programOutput = document.getElementById("programOutput"); 
+				
+				console.log(tempAnimationData.length - 1);
+				for(var i = (tempAnimationData.length - 1); i >= 0; i--){
+					programOutput.value = " pixels.show(); delay(700);"+programOutput.value;
+					for(var j = (tempAnimationData[i].length - 1); j >= 0; j--){
+
+					
+						pixelString = "pixels.setPixelColor(" + j + ", pixels.Color(" + tempAnimationData[i][j].toString() + "));" + "\n";
+						console.log(pixelString);
+						programOutput.value = pixelString+programOutput.value;
+						pixelStringComplete = pixelString + pixelStringComplete;
+					}
+				}
+				
+				
+			}*/
+
+			var generateTheCodeFunc = function(){
+				var pixelString, pixelStringComplete;
+				var programOutput = document.getElementById("programOutput"); 
+				
+				//console.log(tempAnimationData.length - 1);
+				for(var i = (tempAnimationData.length - 1); i >= 0; i--){
+					//programOutput.value = "};  decodeTheColor(data" + i + "); delay(700);" + '\n'+ programOutput.value;
+					/*for(var j = (tempAnimationData[i].length - 1); j >= 0; j--){
+
+						if(j == tempAnimationData[i].length - 1){
+							pixelString = "{" + tempAnimationData[i][j] + "}";
+						}
+						else{
+							pixelString = "{" + tempAnimationData[i][j] + "},";
+						}
+						//console.log(pixelString);
+						programOutput.value = pixelString + programOutput.value;
+						pixelStringComplete = pixelString + pixelStringComplete;
+					}*/ 
+					//programOutput.value = "int data" + i +  "[50][3] = {" + programOutput.value;
+					programOutput.value = "const byte data" + i + "[] PROGMEM = {"+ theColorEncoder(tempAnimationData[i]) + "};" + programOutput.value;
+				}
+				
+				
+			}
+
+			var generateTheCodeFuncForMeta = function(){
+				var pixelString, pixelStringComplete;
+				var programOutput = document.getElementById("programOutput"); 
+				
+				//console.log(tempAnimationData.length - 1);
+				for(var i = (tempAnimationData.length - 1); i >= 0; i--){
+					//programOutput.value = "};  decodeTheColor(data" + i + "); delay(700);" + '\n'+ programOutput.value;
+					/*for(var j = (tempAnimationData[i].length - 1); j >= 0; j--){
+
+						if(j == tempAnimationData[i].length - 1){
+							pixelString = "{" + tempAnimationData[i][j] + "}";
+						}
+						else{
+							pixelString = "{" + tempAnimationData[i][j] + "},";
+						}
+						//console.log(pixelString);
+						programOutput.value = pixelString + programOutput.value;
+						pixelStringComplete = pixelString + pixelStringComplete;
+					}*/ 
+					//programOutput.value = "int data" + i +  "[50][3] = {" + programOutput.value;
+					programOutput.value = "const byte data" + i + "[] = {"+ theColorEncoder(tempAnimationData[i]) + "}; decodeTheColor(data" + i + ", sizeof(data0));" + programOutput.value;
+				}
+				
+				
+			}
+
+			var generateTheCodeFuncForNoSize = function(){
+				var pixelString, pixelStringComplete;
+				var programOutput = document.getElementById("programOutput"); 
+				
+				//console.log(tempAnimationData.length - 1);
+				for(var i = (tempAnimationData.length - 1); i >= 0; i--){
+					//programOutput.value = "};  decodeTheColor(data" + i + "); delay(700);" + '\n'+ programOutput.value;
+					/*for(var j = (tempAnimationData[i].length - 1); j >= 0; j--){
+
+						if(j == tempAnimationData[i].length - 1){
+							pixelString = "{" + tempAnimationData[i][j] + "}";
+						}
+						else{
+							pixelString = "{" + tempAnimationData[i][j] + "},";
+						}
+						//console.log(pixelString);
+						programOutput.value = pixelString + programOutput.value;
+						pixelStringComplete = pixelString + pixelStringComplete;
+					}*/ 
+					//programOutput.value = "int data" + i +  "[50][3] = {" + programOutput.value;
+					programOutput.value = "const byte dataa" + i + "[] = {"+ theColorEncoder(tempAnimationData[i]) + "}; decodeTheColor(dataa" + i + ");" + programOutput.value;
+				}
+				
+				console.log("Length ", tempAnimationData.length);
+			}
+
+			var theColorEncoder = function(data){
+				var encodedValue = 0;	
+				colorCodeArray = []
+				/*for(var j = 0; j <= incomingData.length; j++){
+					console.log(incomingData[j]);
+					if(incomingData[j] == [0, 0, 0]){
+								encodedValue = 1;
+							}
+				}*/
+				for(var i = 0; i <= data.length -1; i++){
+					console.log(data[i]);
+							if(data[i].toString() == [0, 0 ,0]){console.log("First");
+								encodedValue = 0;colorCodeArray.push(encodedValue);
+							}
+							else if(data[i].toString() == [255, 255, 255]){
+								encodedValue = 1;colorCodeArray.push(encodedValue);
+							}
+							
+							else if(data[i].toString() == [255, 0, 0]){
+								encodedValue = 2;colorCodeArray.push(encodedValue);
+							}
+
+							else if(data[i].toString() == [0, 128, 0]){
+								encodedValue = 3;colorCodeArray.push(encodedValue);
+							}
+
+
+							else if(data[i].toString() == [0, 0, 255]){
+								encodedValue = 4;colorCodeArray.push(encodedValue);
+							}
+
+
+							else if(data[i].toString() == [255, 255, 0]){
+								encodedValue = 5;colorCodeArray.push(encodedValue);
+							}
+
+
+							else if(data[i].toString() == [255, 0, 255]){
+								encodedValue = 6;colorCodeArray.push(encodedValue);
+							}
+
+							else if(data[i].toString() == [0, 255, 255]){
+								encodedValue = 7;colorCodeArray.push(encodedValue);
+							}
+
+							else{
+								console.log("Got Here!");
+								encodedValue = 0;colorCodeArray.push(encodedValue);
+							}
+
+				}
+				console.log("color value array", colorCodeArray);
+				return colorCodeArray;
+			
+			}
 	</script>
 </body>
 
 </html>
+
